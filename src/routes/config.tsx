@@ -1,20 +1,17 @@
-//Example
 
-// import Home from "../pages/Home";
-// import About from "../pages/About";
-// import Projects from "../pages/Projects";
+import MainLayout from "../components/layout/MainLayout";
+import Home from "../pages/home";
 
 export const routes = [
   {
     path: "/",
-    element: <Home />,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <Home/>
+      }
+    ]
   },
-//   {
-//     path: "/about",
-//     element: <About />,
-//   },
-//   {
-//     path: "/projects",
-//     element: <Projects />,
-//   },
+
 ];
