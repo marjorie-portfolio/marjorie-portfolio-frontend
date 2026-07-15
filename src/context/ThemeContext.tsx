@@ -31,7 +31,7 @@ export function useTheme() {
 }
 
 export  function ThemeProvider({ children }: Props) {
-  const [mode, setMode] = useState<ThemeMode>("light");
+  const [mode, setMode] = useState<ThemeMode>("dark");
 
   const toggleTheme = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));

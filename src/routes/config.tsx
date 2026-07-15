@@ -1,6 +1,6 @@
 
 import MainLayout from "../components/layout/MainLayout";
-import Home from "../pages/home";
+import Home from "../pages/home/index";
 
 export const routes = [
   {

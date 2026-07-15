@@ -1,3 +1,4 @@
+import "../src/assets/fonts.css"
 import "@mantine/core/styles.css";
 
 import { StrictMode } from "react";

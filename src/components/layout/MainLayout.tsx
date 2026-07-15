@@ -12,7 +12,6 @@ export default function MainLayout() {
   const { colors,} = useTheme();
   return (
     <AppShell
-    withBorder={false}
       header={{ height: 60 }}
       navbar={{
         width: 250,

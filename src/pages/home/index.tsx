@@ -1,13 +1,68 @@
-import { useContext } from "react"
-import { Box, Text } from "@mantine/core"
-import { ThemeContext } from "../../context/ThemeContext"
+import { Flex, Text } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { useTheme } from "../../context/ThemeContext";
 
-export default function Home(){
-    const theme = useContext(ThemeContext)
-    console.log("khate", theme)
-    return(
-        <Box bg={theme?.colors.bgBase} h={100} w={100}>
-            <Text c={theme?.colors.text}>Home</Text>
-        </Box>
-    )
+export default function Home() {
+  const { colors } = useTheme();
+
+  const mobile = useMediaQuery("(max-width: 768px)");
+
+  return (
+    <Flex direction="column" p={mobile ? 0 : 50} align={mobile ? "center" : ""}>
+      <Flex
+        direction="column"
+        my={mobile ? 80 : 150}
+        align={mobile ? "center" : "flex-start"}
+      >
+        <Text
+          ff="Climate Crisis"
+          c={colors.text}
+          style={{
+            fontSize: "clamp(2rem, 4vw, 5rem)", // max 80px
+          }}
+          ta={mobile ? "center" : "left"}
+        >
+          FROM IDEAS TO APPLICATION
+        </Text>
+
+        {!mobile && (
+          <>
+            <Text
+              ff="Climate Crisis"
+              c={colors.text}
+              style={{
+                fontSize: "clamp(2.25rem, 3.5vw, 4.7rem)", // max 75px
+              }}
+            >
+              FROM IDEAS TO APPLICATION
+            </Text>
+
+            <Text
+              ff="Climate Crisis"
+              c={colors.text}
+              style={{
+                fontSize: "clamp(2rem, 3vw, 4.4rem)", // max 70px
+              }}
+            >
+              FROM IDEAS TO APPLICATION
+            </Text>
+          </>
+        )}
+      </Flex>
+
+      <Flex justify="end">
+        <Text
+          ff="Share Tech Mono"
+         style={{
+                fontSize: "clamp(1rem, 2vw, 4.4rem)"
+              }}
+          c={colors.text}
+          ta="right"
+          maw={mobile ? "100%" : 700}
+        >
+          — transforming challenges into solutions through code.
+        </Text>
+      </Flex>
+    </Flex>
+  );
 }
