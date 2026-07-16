@@ -1,6 +1,8 @@
 
 import MainLayout from "../components/layout/MainLayout";
-import Home from "../pages/home/index";
+import Home from "../pages/home";
+import SignIn from "../pages/sign-in"
+import AboutMe from "../pages/about-me";
 
 export const routes = [
   {
@@ -10,6 +12,14 @@ export const routes = [
       {
         index: true,
         element: <Home/>
+      },
+      {
+        path: "/about-me",
+        element: <AboutMe/>
+      },
+      {
+        path: "/sign-in",
+        element:  <SignIn/>
       }
     ]
   },

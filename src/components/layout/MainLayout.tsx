@@ -12,9 +12,10 @@ export default function MainLayout() {
   const { colors,} = useTheme();
   return (
     <AppShell
+    withBorder={false}
       header={{ height: 60 }}
       navbar={{
-        width: 250,
+        width: 300,
         breakpoint: "sm",
         collapsed: { desktop: !opened, mobile: !opened },
       }}
@@ -26,7 +27,7 @@ export default function MainLayout() {
           backgroundColor: colors.bgBase,
         },
         navbar: {
-          backgroundColor: colors.bgSurface,
+          backgroundColor: colors.bgBase,
         },
       }}
     >
