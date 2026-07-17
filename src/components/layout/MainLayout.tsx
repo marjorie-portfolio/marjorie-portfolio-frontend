@@ -33,7 +33,7 @@ export default function MainLayout() {
     >
       <Header opened={opened} onClick={() => toggle()} />
       <SideBar />
-      <Main />
+      <Main opened={opened} toggle={() => toggle()}/>
     </AppShell>
   );
 }

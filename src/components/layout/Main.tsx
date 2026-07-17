@@ -1,10 +1,15 @@
 import { Outlet } from "react-router-dom";
-import { AppShell } from "@mantine/core";
+import { AppShell, Overlay } from "@mantine/core";
 
 import { useTheme } from "../../context/ThemeContext";
 import { createPlus4Pattern } from "../../utils/pattern/plus4Pattern";
 
-export default function Main() {
+type MainProps = {
+  opened: boolean;
+  toggle: () => void
+}
+
+export default function Main({opened, toggle}: MainProps) {
   const {colors } = useTheme();
 
   const pattern = createPlus4Pattern(
@@ -28,6 +33,15 @@ export default function Main() {
         backgroundRepeat: "repeat",
       }}
     >
+      {opened && (
+          <Overlay
+            color="#000"
+            backgroundOpacity={0.1} 
+            blur={1}                
+            zIndex={100}            
+            onClick={toggle}         
+          />
+        )}
       <Outlet />
     </AppShell.Main>
   );
