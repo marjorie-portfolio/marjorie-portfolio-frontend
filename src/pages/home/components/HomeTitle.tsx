@@ -11,7 +11,7 @@ export default function HomeTitle() {
     <>
       <Flex
         direction="column"
-        my={mobile ? 80 : 150}
+        my={mobile ? 80 : 50}
         align={mobile ? "center" : "flex-start"}
       >
         <Text

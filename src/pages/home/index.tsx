@@ -21,7 +21,7 @@ export default function Home() {
       direction="column"
       p={mobile ? 0 : 50}
       align={mobile ? "center" : ""}
-      gap={10}
+      gap={50}
     >
       <HomeTitle />
 
