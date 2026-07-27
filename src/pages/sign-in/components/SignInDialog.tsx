@@ -1,9 +1,52 @@
-import { Paper, Text, Box, TextInput, Flex, Button } from "@mantine/core";
+import { useState } from "react";
+import axios from "axios";
+import {
+  Paper,
+  Text,
+  Box,
+  TextInput,
+  Flex,
+  Button,
+  PasswordInput,
+} from "@mantine/core";
+
 import { useTheme } from "../../../context/ThemeContext";
+
+import { useLogin } from "../../../query/auth";
+import type { FetchUserRequest } from "../../../types/auth";
 
 export default function SignInDialog() {
   const { colors } = useTheme();
 
+  const loginMutation = useLogin();
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [loginForm, setLoginForm] = useState<FetchUserRequest>({
+    emailOrUsername: "",
+    password: "",
+  });
+
+  const handleSubmit = () =>
+    loginMutation.mutate(loginForm, {
+      onSuccess: (data) => {
+        console.log(data);
+      },
+
+      onError: (error) => {
+        if (axios.isAxiosError(error)) {
+          setErrorMessage(
+            error.response?.data.message ?? "Something went wrong.",
+          );
+          setLoginForm({
+            emailOrUsername: "",
+            password: "",
+          });
+        } else {
+          setErrorMessage("Something went wrong.");
+        }
+      },
+    });
   return (
     <>
       <Paper
@@ -28,11 +71,19 @@ export default function SignInDialog() {
             Sign in to continue building your professional story.
           </Text>
         </Box>
-        <Box px={100} py={80}>
+        <Box px={20} py={20}>
           <Flex direction={"column"} gap={20}>
             <TextInput
+              value={loginForm.emailOrUsername ?? ""}
+              onChange={(e) =>
+                setLoginForm({
+                  ...loginForm,
+                  emailOrUsername: e.currentTarget.value,
+                })
+              }
               label="Email or Username"
-              placeholder="Enter your email or password..."
+              placeholder="Enter your email or username..."
+              size="md"
               styles={{
                 label: {
                   color: colors.accPrimary,
@@ -43,11 +94,18 @@ export default function SignInDialog() {
                   backgroundColor: colors.bgHighlight,
                 },
               }}
-              size="md"
             />
-            <TextInput
+            <PasswordInput
+              value={loginForm.password ?? ""}
+              onChange={(e) =>
+                setLoginForm({
+                  ...loginForm,
+                  password: e.currentTarget.value,
+                })
+              }
               label="Password"
               placeholder="Enter your password..."
+              size="md"
               styles={{
                 label: {
                   color: colors.accPrimary,
@@ -57,12 +115,27 @@ export default function SignInDialog() {
                   border: `2px solid ${colors.accPrimary}`,
                   backgroundColor: colors.bgHighlight,
                 },
+                visibilityToggle: {
+                  color: colors.accPrimary,
+                },
               }}
-              size="md"
             />
             <Flex w={"100%"} align={"center"} justify={"center"}>
-              <Button w={100} variant="outline" color={colors.accPrimary}>SIGN-IN</Button>
+              <Button
+                w={100}
+                variant="outline"
+                color={colors.accPrimary}
+                onClick={handleSubmit}
+                  loading={loginMutation.isPending}
+              >
+                SIGN-IN
+              </Button>
             </Flex>
+            {errorMessage && (
+              <Text c="red" size="sm" ta={"center"}>
+                {errorMessage}
+              </Text>
+            )}
           </Flex>
         </Box>
       </Paper>

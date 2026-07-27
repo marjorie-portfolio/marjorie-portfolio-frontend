@@ -1,0 +1,9 @@
+import api from "./axios.ts"
+import type { FetchUserRequest, FetchUserResponse } from "../types/auth.ts"
+
+export async function fetchUser(reqBody: FetchUserRequest): Promise <FetchUserResponse> {
+
+    const response = await api.post(`/auth/login`,reqBody)
+
+   return response.data
+}
