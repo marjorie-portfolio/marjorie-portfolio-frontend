@@ -7,3 +7,9 @@ export async function fetchUser(reqBody: FetchUserRequest): Promise <FetchUserRe
 
    return response.data
 }
+
+export async function fetchCurrentUser(): Promise<FetchUserResponse> {
+  const response = await api.get("/auth/currentUser");
+
+  return response.data;
+}

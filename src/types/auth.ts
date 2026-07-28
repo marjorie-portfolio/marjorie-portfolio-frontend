@@ -1,13 +1,15 @@
 export interface FetchUserRequest {
- emailOrUsername?:  string,
- password?: string
+  emailOrUsername?: string;
+  password?: string;
 }
 
 export interface FetchUserResponse {
-     message: string,
-      user: {
-        id: number,
-        email: string,
-        fullname: string,
-      },
+  message?: string;
+  user: User;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  fullname: string;
 }

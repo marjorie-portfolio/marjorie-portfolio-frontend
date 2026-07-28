@@ -4,12 +4,9 @@ import { AppShell, Overlay } from "@mantine/core";
 import { useTheme } from "../../context/ThemeContext";
 import { createPlus4Pattern } from "../../utils/pattern/plus4Pattern";
 
-type MainProps = {
-  opened: boolean;
-  toggle: () => void
-}
 
-export default function Main({opened, toggle}: MainProps) {
+
+export default function Main() {
   const {colors } = useTheme();
 
   const pattern = createPlus4Pattern(
@@ -33,15 +30,7 @@ export default function Main({opened, toggle}: MainProps) {
         backgroundRepeat: "repeat",
       }}
     >
-      {opened && (
-          <Overlay
-            color="#000"
-            backgroundOpacity={0.1} 
-            blur={1}                
-            zIndex={100}            
-            onClick={toggle}         
-          />
-        )}
+     
       <Outlet />
     </AppShell.Main>
   );

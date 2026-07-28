@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { IconArrowBigDownLinesFilled } from "@tabler/icons-react";
 
 import { useTheme } from "../../context/ThemeContext";
+import useAuthState from "../../store/useAuthStore";
 
 import HomeTitle from "./components/HomeTitle";
 import GridTitle from "./components/GridTitle";
@@ -11,9 +12,9 @@ import GridImage from "./components/GridImage";
 import EndTitle from "./components/EndTitle";
 
 export default function Home() {
-  const { colors } = useTheme();
   const navigate = useNavigate();
-
+  const { colors } = useTheme();
+  const { isAuthenticated } = useAuthState();
   const mobile = useMediaQuery("(max-width: 768px)");
 
   return (
@@ -27,14 +28,19 @@ export default function Home() {
 
       <Flex justify={"center"}>
         <ActionIcon disabled size={"xl"} bg={colors.bgBase}>
-          <IconArrowBigDownLinesFilled color={colors.accPrimary} size={30}/>
+          <IconArrowBigDownLinesFilled color={colors.accPrimary} size={30} />
         </ActionIcon>
       </Flex>
 
       <Flex direction="column" gap={100}>
         <GridTitle />
         <GridImage />
-        <EndTitle onClick={() => navigate("/sign-in")} />
+        <EndTitle
+          onClick={() =>
+            isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")
+          }
+          isAuthenticated={isAuthenticated}
+        />
       </Flex>
     </Flex>
   );

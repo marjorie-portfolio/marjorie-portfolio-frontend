@@ -1,7 +1,7 @@
-import { AppShell, ActionIcon, Flex, Image, Text } from "@mantine/core";
-
+import { AppShell, ActionIcon, Flex, Image, Text, Button } from "@mantine/core";
 import { IconSun, IconMoon, IconMenu2 } from "@tabler/icons-react";
 import { useTheme } from "../../context/ThemeContext";
+import useAuthState from "../../store/useAuthStore";
 
 import MK_light from "../../assets/icons/MK_light.png";
 import MK_dark from "../../assets/icons/MK_dark.png";
@@ -13,6 +13,8 @@ type HeaderProps = {
 
 export default function Header({ opened, onClick }: HeaderProps) {
   const { colors, mode, toggleTheme } = useTheme();
+
+  const { isAuthenticated } = useAuthState();
 
   console.log(mode);
   return (
@@ -27,7 +29,20 @@ export default function Header({ opened, onClick }: HeaderProps) {
         </ActionIcon>
 
         <Flex align="center">
-          {/* <Button variant="transparent" ff={"Poppins"} fw={700} fz={20} color={colors.text}>CONTACT ME</Button> */}
+          {isAuthenticated ? (
+            <Text>Welcome Back Marj!</Text>
+          ) : (
+            <Button
+              variant="transparent"
+              ff={"Poppins"}
+              fw={600}
+              fz={20}
+              color={colors.text}
+            >
+              CONTACT ME
+            </Button>
+          )}
+
           {mode === "dark" ? (
             <ActionIcon
               onClick={toggleTheme}

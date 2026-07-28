@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
   Paper,
   Text,
@@ -13,9 +14,14 @@ import {
 import { useTheme } from "../../../context/ThemeContext";
 
 import { useLogin } from "../../../query/auth";
+import useAuthState from "../../../store/useAuthStore";
+
 import type { FetchUserRequest } from "../../../types/auth";
 
 export default function SignInDialog() {
+  const navigate = useNavigate()
+  const { login } = useAuthState();
+
   const { colors } = useTheme();
 
   const loginMutation = useLogin();
@@ -30,7 +36,8 @@ export default function SignInDialog() {
   const handleSubmit = () =>
     loginMutation.mutate(loginForm, {
       onSuccess: (data) => {
-        console.log(data);
+        login(data.user);
+        navigate("/dashboard")
       },
 
       onError: (error) => {
@@ -126,7 +133,7 @@ export default function SignInDialog() {
                 variant="outline"
                 color={colors.accPrimary}
                 onClick={handleSubmit}
-                  loading={loginMutation.isPending}
+                loading={loginMutation.isPending}
               >
                 SIGN-IN
               </Button>
