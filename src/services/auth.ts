@@ -8,6 +8,10 @@ export async function fetchUser(reqBody: FetchUserRequest): Promise <FetchUserRe
    return response.data
 }
 
+export async function logout(){
+ await api.post(`/auth/logout`)
+}
+
 export async function fetchCurrentUser(): Promise<FetchUserResponse> {
   const response = await api.get("/auth/currentUser");
 
