@@ -49,8 +49,9 @@ export default function HomeTitle() {
           </>
         )}
       </Flex>
+  
 
-      <Flex justify="end">
+      <Flex justify="end" w={mobile? 300 : "100%"}>
         <Text
           ff="Share Tech Mono"
           style={{

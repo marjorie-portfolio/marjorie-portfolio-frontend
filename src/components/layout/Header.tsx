@@ -30,7 +30,7 @@ export default function Header({ opened, onClick }: HeaderProps) {
 
         <Flex align="center">
           {isAuthenticated ? (
-            <Text>Welcome Back Marj!</Text>
+            <Text c={colors.text}>Welcome Back Marj!</Text>
           ) : (
             <Button
               variant="transparent"
