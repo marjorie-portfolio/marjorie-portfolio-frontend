@@ -22,6 +22,7 @@ export default function PageHeader({
   return (
     <Box w={"90%"} h={mobile? 35 : 70} pos="relative" bg={colors.bgBase} my={20}>
       {(
+        !hideBackButton &&
         <ActionIcon
           pos="absolute"
           left={15}

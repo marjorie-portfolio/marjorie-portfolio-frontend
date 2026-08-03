@@ -18,7 +18,11 @@ import useAuthState from "../../../store/useAuthStore";
 
 import type { FetchUserRequest } from "../../../types/auth";
 
-export default function SignInDialog() {
+interface SignInDialogProps{
+  mobile: boolean
+}
+
+export default function SignInDialog({mobile}: SignInDialogProps) {
   const navigate = useNavigate()
   const { login } = useAuthState();
 
@@ -61,7 +65,7 @@ export default function SignInDialog() {
         style={{
           border: `3px solid ${colors.accPrimary}`,
         }}
-        w={"35%"}
+        w={mobile? "90%" : "35%"}
         bg={colors.bgHighlight}
         c={colors.accPrimary}
       >
