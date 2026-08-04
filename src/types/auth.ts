@@ -5,11 +5,18 @@ export interface FetchUserRequest {
 
 export interface FetchUserResponse {
   message?: string;
-  user: User;
+  user?: User;
 }
 
 export interface User {
   id: number;
   email: string;
   fullname: string;
+}
+
+export interface DashBoard {
+  visitora? : number;
+  certifications? : number,
+  projects?: number;
+  skills?: number
 }

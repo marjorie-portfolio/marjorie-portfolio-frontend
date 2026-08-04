@@ -1,9 +1,8 @@
 import ProtectedRoute from "./protectedRoute";
 
-
 import MainLayout from "../components/layout/MainLayout";
 import Home from "../pages/home";
-import SignIn from "../pages/sign-in"
+import SignIn from "../pages/sign-in";
 import AboutMe from "../pages/about-me";
 
 import DashBoard from "../pages/dashboard";
@@ -15,26 +14,25 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <Home/>
+        element: <Home />,
       },
       {
         path: "/about-me",
-        element: <AboutMe/>
+        element: <AboutMe />,
       },
       {
         path: "/sign-in",
-        element:  <SignIn/>
+        element: <SignIn />,
       },
       {
-        element: <ProtectedRoute/>,
+        element: <ProtectedRoute />,
         children: [
           {
-             path: "/dashboard",
-        element:  <DashBoard/>
-          }
-        ]
-      }
-    ]
+            path: "/dashboard",
+            element: <DashBoard />,
+          },
+        ],
+      },
+    ],
   },
-
 ];
