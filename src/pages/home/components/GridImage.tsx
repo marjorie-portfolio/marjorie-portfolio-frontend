@@ -7,10 +7,10 @@ export default function Home() {
     const mobile = useMediaQuery("(max-width: 768px)");
   return (
     <Flex justify={"center"}>
-      <Flex gap="md" w={mobile? "45%" :"50%"} direction={mobile? "column": "row"}>
+      <Flex gap="md" w={mobile? "45%" :"70%"} direction={mobile? "column": "row"}>
         {/* Left Column */}
         <Stack flex={1}>
-          <Paper h={mobile? 650/2 : 650}>ABOUT ME</Paper>
+          <Paper h={mobile? 650/2 : 750}>ABOUT ME</Paper>
           <Paper h={mobile? 250/2 : 250}>MY JOURNEY</Paper>
         </Stack>
 
