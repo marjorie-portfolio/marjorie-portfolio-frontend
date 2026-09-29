@@ -7,5 +7,7 @@ export default function AboutMe(){
 
     const {isAuthenticated} = useAuthState()
 
+    console.log("isAuthenticated", isAuthenticated)
+
     return isAuthenticated? <Authenticated/>:<Guest/>
 }

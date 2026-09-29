@@ -1,25 +1,29 @@
-import { Flex, Stack, Paper } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-
+import { SimpleGrid, Paper, Container } from "@mantine/core";
 
 export default function Home() {
-
-    const mobile = useMediaQuery("(max-width: 768px)");
   return (
-    <Flex justify={"center"}>
-      <Flex gap="md" w={mobile? "45%" :"70%"} direction={mobile? "column": "row"}>
+    <Container size="xl" py="xl" w="100%">
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xl">
         {/* Left Column */}
-        <Stack flex={1}>
-          <Paper h={mobile? 650/2 : 750}>ABOUT ME</Paper>
-          <Paper h={mobile? 250/2 : 250}>MY JOURNEY</Paper>
-        </Stack>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <Paper p="md" radius="md" style={{ minHeight: 400 }}>
+            ABOUT ME
+          </Paper>
+          <Paper p="md" radius="md" style={{ minHeight: 250 }}>
+            MY JOURNEY
+          </Paper>
+        </div>
 
         {/* Right Column */}
-        <Stack flex={1}>
-          <Paper h={mobile? 250/2 : 250}>SKILLS</Paper>
-          <Paper h={mobile? 650/2 : 650}>WORKS</Paper>
-        </Stack>
-      </Flex>
-    </Flex>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <Paper p="md" radius="md" style={{ minHeight: 250 }}>
+            SKILLS
+          </Paper>
+          <Paper p="md" radius="md" style={{ minHeight: 400 }}>
+            WORKS
+          </Paper>
+        </div>
+      </SimpleGrid>
+    </Container>
   );
 }

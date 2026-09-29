@@ -8,7 +8,7 @@ export default function GridTitle() {
 
   const mobile = useMediaQuery("(max-width: 768px)");
   return (
-    <Flex direction={"column"} align={"center"} ta={"center"} mt={100}>
+    <Flex direction={"column"} align={"center"} ta={"center"} mt={30}>
       <Text ff={"Bagel Fat One"} w={700} fz={mobile? 40 :70} c={colors.text}>
         CLICK THE IMAGEs
       </Text>

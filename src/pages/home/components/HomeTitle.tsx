@@ -6,7 +6,7 @@ export default function HomeTitle() {
   const { colors } = useTheme();
 
   const mobile = useMediaQuery("(max-width: 768px)");
-  
+
   return (
     <>
       <Flex
@@ -17,9 +17,7 @@ export default function HomeTitle() {
         <Text
           ff="Climate Crisis"
           c={colors.text}
-          style={{
-            fontSize: "clamp(2rem, 4vw, 5rem)", // max 80px
-          }}
+          fz={83}
           ta={mobile ? "center" : "left"}
         >
           FROM IDEAS TO APPLICATION
@@ -29,9 +27,11 @@ export default function HomeTitle() {
           <>
             <Text
               ff="Climate Crisis"
-              c={colors.text}
+              c={colors.bgBase}
+              lh={1.6}
+              fz={78}
               style={{
-                fontSize: "clamp(2.25rem, 3.5vw, 4.7rem)", // max 75px
+                WebkitTextStroke: `3px ${colors.accPrimary}`,
               }}
             >
               FROM IDEAS TO APPLICATION
@@ -39,9 +39,11 @@ export default function HomeTitle() {
 
             <Text
               ff="Climate Crisis"
-              c={colors.text}
+              c={colors.bgBase}
+              lh={1.6}
+              fz={73}
               style={{
-                fontSize: "clamp(2rem, 3vw, 4.4rem)", // max 70px
+                WebkitTextStroke: `1px ${colors.text}`,
               }}
             >
               FROM IDEAS TO APPLICATION
@@ -49,9 +51,9 @@ export default function HomeTitle() {
           </>
         )}
       </Flex>
-  
 
-      <Flex justify="end" w={mobile? 300 : "100%"}>
+
+      <Flex justify="end" w={mobile ? 300 : "100%"}>
         <Text
           ff="Share Tech Mono"
           style={{
@@ -61,7 +63,7 @@ export default function HomeTitle() {
           ta="right"
           maw={mobile ? "100%" : 700}
         >
-          — transforming challenges into solutions through code.
+          — TRANSFORMING CHALLENGES INTO SOLUTIONS THROUGH CODE.
         </Text>
       </Flex>
     </>
