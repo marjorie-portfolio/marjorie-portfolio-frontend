@@ -1,6 +1,7 @@
 import { useDisclosure } from "@mantine/hooks";
 import { AppShell } from "@mantine/core";
 
+import { useMediaQuery } from "@mantine/hooks";
 import { useTheme } from "../../context/ThemeContext";
 
 import Header from "./Header";
@@ -9,14 +10,15 @@ import Main from "./Main";
 
 export default function MainLayout() {
   const [opened, { toggle }] = useDisclosure(false);
+   const mobile = useMediaQuery("(max-width: 768px)");
   const { colors,} = useTheme();
   return (
     <AppShell
     withBorder={false}
-      header={{ height: 60 }}
+      header={{ height: mobile ? 40 : 60 }}
       navbar={{
-        width: 300,
-        breakpoint: "sm",
+        width: mobile? 1: 300,
+        breakpoint: "xs",
         collapsed: { desktop: !opened, mobile: !opened },
       }}
       styles={{
@@ -33,6 +35,7 @@ export default function MainLayout() {
     >
       <Header opened={opened} onClick={() => toggle()} />
       <SideBar />
+      
       <Main/>
     </AppShell>
   );

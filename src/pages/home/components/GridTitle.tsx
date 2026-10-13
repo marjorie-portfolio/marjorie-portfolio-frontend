@@ -8,14 +8,14 @@ export default function GridTitle() {
 
   const mobile = useMediaQuery("(max-width: 768px)");
   return (
-    <Flex direction={"column"} align={"center"} ta={"center"} mt={30}>
-      <Text ff={"Bagel Fat One"} w={700} fz={mobile? 40 :70} c={colors.text}>
+    <Flex direction={"column"} align={"center"} ta={"center"} mt={30} >
+      <Text ff={"Bagel Fat One"} fz={mobile? 32 :70} c={colors.text} bg={colors.bgBase} px={30} bdrs={1000}>
         CLICK THE IMAGEs
       </Text>
-        <Text ff={"Bagel Fat One"} w={800} fz={mobile? 35 :70} c={colors.text}>
+        <Text ff={"Bagel Fat One"} fz={mobile? 31:70} c={colors.text} bg={colors.bgBase} px={30} bdrs={1000}>
        TO KNOW MORE ABOUT
       </Text>
-      <Text ff={"Bagel Fat One"} w={700} fz={mobile? 40 :70} c={colors.accPrimary}>
+      <Text ff={"Bagel Fat One"} fz={mobile? 35 :70} c={colors.accPrimary} bg={colors.bgBase} px={30} bdrs={1000}>
         MARJORIE!!!
       </Text>
     </Flex>

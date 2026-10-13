@@ -3,6 +3,9 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { IconArrowBigDownLinesFilled } from "@tabler/icons-react";
 
+import {useQuery} from "@tanstack/react-query";
+import { sectionQueries } from "../../query/sections";
+
 import { useTheme } from "../../context/ThemeContext";
 import useAuthState from "../../store/useAuthStore";
 
@@ -17,12 +20,15 @@ export default function Home() {
   const { isAuthenticated } = useAuthState();
   const mobile = useMediaQuery("(max-width: 768px)");
 
+    const { data: sections, isLoading, error } = useQuery(sectionQueries.all());
+
+
   return (
     <Flex
       direction="column"
-      p={mobile ? 0 : 50}
       align={mobile ? "center" : ""}
       gap={50}
+      p={mobile ? 0 : 50}
     >
       <HomeTitle />
 
@@ -34,7 +40,7 @@ export default function Home() {
 
       <Flex direction="column" gap={100}>
         <GridTitle />
-        <GridImage />
+        <GridImage data={sections} />
         <EndTitle
           onClick={() =>
             isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")

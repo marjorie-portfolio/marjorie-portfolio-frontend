@@ -8,17 +8,23 @@ export default function HomeTitle() {
   const mobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <>
+    <Flex direction={"column"}>
       <Flex
         direction="column"
         my={mobile ? 80 : 50}
         align={mobile ? "center" : "flex-start"}
+        
+        gap={mobile ? 0 : 40}
       >
         <Text
           ff="Climate Crisis"
           c={colors.text}
-          fz={83}
+          style={{
+            fontSize: "clamp(2.2rem, 5.5vw, 62px)",
+          }}
           ta={mobile ? "center" : "left"}
+          bg={colors.bgBase}
+          px={30}
         >
           FROM IDEAS TO APPLICATION
         </Text>
@@ -28,11 +34,12 @@ export default function HomeTitle() {
             <Text
               ff="Climate Crisis"
               c={colors.bgBase}
-              lh={1.6}
-              fz={78}
               style={{
                 WebkitTextStroke: `3px ${colors.accPrimary}`,
+                fontSize: "clamp(1rem, 5.5vw, 60px)",
               }}
+              bg={colors.bgBase}
+              px={30}
             >
               FROM IDEAS TO APPLICATION
             </Text>
@@ -40,11 +47,12 @@ export default function HomeTitle() {
             <Text
               ff="Climate Crisis"
               c={colors.bgBase}
-              lh={1.6}
-              fz={73}
               style={{
                 WebkitTextStroke: `1px ${colors.text}`,
+                fontSize: "clamp(1rem, 5.5vw, 58px)",
               }}
+              px={30}
+              bg={colors.bgBase}
             >
               FROM IDEAS TO APPLICATION
             </Text>
@@ -53,19 +61,20 @@ export default function HomeTitle() {
       </Flex>
 
 
-      <Flex justify="end" w={mobile ? 300 : "100%"}>
+      <Flex justify="end">
         <Text
           ff="Share Tech Mono"
           style={{
-            fontSize: "clamp(1rem, 2vw, 4.4rem)",
+            fontSize: "clamp(1rem, 2vw, 4rem)",
           }}
           c={colors.text}
-          ta="right"
-          maw={mobile ? "100%" : 700}
+          ta={mobile ? "center" : "right"}
+          bg={colors.bgBase} p={5}
+          mr={mobile ? 0 : 50}
         >
-          — TRANSFORMING CHALLENGES INTO SOLUTIONS THROUGH CODE.
+          {mobile ? "" : "— "}TRANSFORMING CHALLENGES INTO SOLUTIONS THROUGH CODE.
         </Text>
       </Flex>
-    </>
+    </Flex>
   );
 }

@@ -4,8 +4,8 @@ export function createPlus4Pattern(
   secondary: string
 ) {
   const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-  <rect width="100%" height="100%" fill="${background}"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" >
+  <rect width="20%" height="20%" fill="${background}"/>
 
   <path
     fill="none"
