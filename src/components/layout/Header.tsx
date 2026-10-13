@@ -23,7 +23,7 @@ export default function Header({ opened, onClick }: HeaderProps) {
     <AppShell.Header
       style={{
         borderBottom: `1px solid ${colors.bgBase}`,
-        height: mobile ? "50px" : "70px",
+        height: mobile ? "50px" : "60px",
       }}
     >
       <Flex h="100%" w={"100vw"} align="center" px="md" pr="30px" justify="space-between">

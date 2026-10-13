@@ -40,7 +40,7 @@ export default function Home() {
 
       <Flex direction="column" gap={100}>
         <GridTitle />
-        <GridImage data={sections} />
+        <GridImage data={sections?.data} />
         <EndTitle
           onClick={() =>
             isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")

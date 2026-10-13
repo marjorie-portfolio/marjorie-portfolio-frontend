@@ -10,10 +10,10 @@ export default function GridTitle() {
   return (
     <Flex direction={"column"} align={"center"} ta={"center"} mt={30} >
       <Text ff={"Bagel Fat One"} fz={mobile? 32 :70} c={colors.text} bg={colors.bgBase} px={30} bdrs={1000}>
-        CLICK THE IMAGEs
+        CLICK THE BOXES
       </Text>
         <Text ff={"Bagel Fat One"} fz={mobile? 31:70} c={colors.text} bg={colors.bgBase} px={30} bdrs={1000}>
-       TO KNOW MORE ABOUT
+       TO DISCOVER MORE ABOUT
       </Text>
       <Text ff={"Bagel Fat One"} fz={mobile? 35 :70} c={colors.accPrimary} bg={colors.bgBase} px={30} bdrs={1000}>
         MARJORIE!!!
