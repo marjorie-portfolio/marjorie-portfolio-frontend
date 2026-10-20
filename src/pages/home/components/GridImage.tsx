@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Grid, Paper, Container, Text, Box } from "@mantine/core";
+import { Grid, Paper, Container, Text, Box, Divider } from "@mantine/core";
 import { useTheme } from "../../../context/ThemeContext";
 
 import "./styles/GridImage.Module.css";
 
-export default function GridImage({ data }: { data?: any }) {
-  const rawItems: any[] = Array.isArray(data) ? data : [];
-  const items = rawItems.slice(0, 4);
+export default function GridImage({ cards, sections }: { cards?: any, sections?:any }) {
+  const rawItems: any[] = Array.isArray(cards) ? cards : [];
+
   const { colors } = useTheme();
 
   const [flippedCards, setFlippedCards] = useState<Record<number, boolean>>({});
@@ -18,11 +18,14 @@ export default function GridImage({ data }: { data?: any }) {
     }));
   };
 
+
+  console.log(rawItems)
+
   return (
     <Container size="xl" py="xl" w="100%">
+    
       <Grid gutter="md">
-        {items.map((item: any, index: number) => {
-          const firstItem = item.items?.[0];
+        {rawItems.map((item: any, index: number) => {
           const isFlipped = !!flippedCards[index];
 
           return (
@@ -50,7 +53,7 @@ export default function GridImage({ data }: { data?: any }) {
                   >
                     <Box className="backContent">
                       <Text size="sm" c="gray.7" className="descriptionText">
-                        {firstItem?.description || "No description provided."}
+                        {item?.description || "No description provided."}
                       </Text>
                     </Box>
 

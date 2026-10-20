@@ -16,7 +16,7 @@ import { useTheme } from "../../../context/ThemeContext";
 import { useLogin } from "../../../query/auth";
 import useAuthState from "../../../store/useAuthStore";
 
-import type { FetchUserRequest } from "../../../types/auth";
+import type { FetchUserRequest } from "../../../types/auth.types";
 
 interface SignInDialogProps{
   mobile: boolean

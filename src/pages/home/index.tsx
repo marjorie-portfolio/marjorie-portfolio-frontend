@@ -1,10 +1,11 @@
-import { Flex, ActionIcon } from "@mantine/core";
+import { Flex, ActionIcon, Divider, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { IconArrowBigDownLinesFilled } from "@tabler/icons-react";
 
-import {useQuery} from "@tanstack/react-query";
-import { sectionQueries } from "../../query/sections";
+import { useQuery } from "@tanstack/react-query";
+import { sectionQueries } from "../../query/sections.query";
+import { cardQueries } from "../../query/cards.query";
 
 import { useTheme } from "../../context/ThemeContext";
 import useAuthState from "../../store/useAuthStore";
@@ -20,8 +21,10 @@ export default function Home() {
   const { isAuthenticated } = useAuthState();
   const mobile = useMediaQuery("(max-width: 768px)");
 
-    const { data: sections, isLoading, error } = useQuery(sectionQueries.all());
+  const { data: sections } = useQuery(sectionQueries.all());
+  const { data: cards, isLoading } = useQuery(cardQueries.all());
 
+  console.log(sections);
 
   return (
     <Flex
@@ -38,9 +41,30 @@ export default function Home() {
         </ActionIcon>
       </Flex>
 
-      <Flex direction="column" gap={100}>
+      <Flex direction="column">
         <GridTitle />
-        <GridImage data={sections?.data} />
+        {sections?.data.map}
+        <>
+          <Divider
+            label={
+              <Text
+                size="sm"
+                fw={700}
+                c={colors.text}
+                style={{ letterSpacing: "1px" }}
+                bg={colors.bgBase}
+              >
+                title
+              </Text>
+            }
+            labelPosition="center"
+            size="sm"
+            color="pink.4"
+            mb={5}
+            mt={100}
+          />
+          <GridImage cards={cards?.data} sections={sections} />
+        </>
         <EndTitle
           onClick={() =>
             isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")

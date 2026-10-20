@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchUser, fetchCurrentUser, logout} from "../api/auth";
-import type { FetchUserRequest, FetchUserResponse } from "../types/auth";
+import { fetchUser, fetchCurrentUser, logout} from "../api/auth.api";
+import type { FetchUserRequest, FetchUserResponse } from "../types/auth.types";
 
 export function useLogin(){
     return useMutation<FetchUserResponse, Error, FetchUserRequest>({

@@ -1,4 +1,4 @@
-import api from "./axios.ts";
+import api from "../services/axios";
 
 export async function fetchSections() {
     const response = await api.get("/section");

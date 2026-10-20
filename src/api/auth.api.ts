@@ -1,5 +1,5 @@
 import api from "../services/axios.ts";
-import type { FetchUserRequest, FetchUserResponse } from "../types/auth.ts";
+import type { FetchUserRequest, FetchUserResponse } from "../types/auth.types.ts";
 
 export async function fetchUser(
   reqBody: FetchUserRequest,
