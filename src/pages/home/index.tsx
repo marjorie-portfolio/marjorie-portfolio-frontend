@@ -5,14 +5,13 @@ import { IconArrowBigDownLinesFilled } from "@tabler/icons-react";
 
 import { useQuery } from "@tanstack/react-query";
 import { sectionQueries } from "../../query/sections.query";
-import { cardQueries } from "../../query/cards.query";
 
 import { useTheme } from "../../context/ThemeContext";
 import useAuthState from "../../store/useAuthStore";
 
 import HomeTitle from "./components/HomeTitle";
 import GridTitle from "./components/GridTitle";
-import GridImage from "./components/GridImage";
+import GridBoxes from "./components/GridBoxes";
 import EndTitle from "./components/EndTitle";
 
 export default function Home() {
@@ -22,7 +21,6 @@ export default function Home() {
   const mobile = useMediaQuery("(max-width: 768px)");
 
   const { data: sections } = useQuery(sectionQueries.all());
-  const { data: cards, isLoading } = useQuery(cardQueries.all());
 
   console.log(sections);
 
@@ -43,28 +41,32 @@ export default function Home() {
 
       <Flex direction="column">
         <GridTitle />
-        {sections?.data.map}
-        <>
-          <Divider
-            label={
-              <Text
+        {sections?.data.map((item: any) =>
+          item.cards.length === 0 ? null : (
+            <div key={item.id}>
+              <Divider
+                label={
+                  <Text
+                    size="sm"
+                    fw={700}
+                    c={colors.text}
+                    style={{ letterSpacing: "1px" }}
+                    bg={colors.bgBase}
+                  >
+                    {item.title}
+                  </Text>
+                }
+                labelPosition="center"
                 size="sm"
-                fw={700}
-                c={colors.text}
-                style={{ letterSpacing: "1px" }}
-                bg={colors.bgBase}
-              >
-                title
-              </Text>
-            }
-            labelPosition="center"
-            size="sm"
-            color="pink.4"
-            mb={5}
-            mt={100}
-          />
-          <GridImage cards={cards?.data} sections={sections} />
-        </>
+                color="pink.4"
+                mb={5}
+                mt={100}
+              />
+              <GridBoxes sectionId={item.id} />
+            </div>
+          ),
+        )}
+
         <EndTitle
           onClick={() =>
             isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")

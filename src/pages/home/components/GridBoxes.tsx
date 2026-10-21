@@ -1,11 +1,16 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import { Grid, Paper, Container, Text, Box, Divider } from "@mantine/core";
 import { useTheme } from "../../../context/ThemeContext";
-
 import "./styles/GridImage.Module.css";
 
-export default function GridImage({ cards, sections }: { cards?: any, sections?:any }) {
-  const rawItems: any[] = Array.isArray(cards) ? cards : [];
+import { cardQueries } from "../../../query/cards.query";
+
+export default function GridBoxes({ sectionId }: { sectionId: any }) {
+  const { data: cards } = useQuery(cardQueries.list(sectionId));
+
+  const rawItems: any[] = Array.isArray(cards?.data) ? cards?.data : [];
 
   const { colors } = useTheme();
 
@@ -18,12 +23,8 @@ export default function GridImage({ cards, sections }: { cards?: any, sections?:
     }));
   };
 
-
-  console.log(rawItems)
-
   return (
     <Container size="xl" py="xl" w="100%">
-    
       <Grid gutter="md">
         {rawItems.map((item: any, index: number) => {
           const isFlipped = !!flippedCards[index];
@@ -42,7 +43,9 @@ export default function GridImage({ cards, sections }: { cards?: any, sections?:
                     className="cardFace"
                     bg={colors.accPrimary}
                   >
-                    <Text fw={600} size="xl" c={colors.text}>CLICK HERE!!!</Text>
+                    <Text fw={600} size="xl" c={colors.text}>
+                      CLICK HERE!!!
+                    </Text>
                   </Paper>
 
                   {/* BACK FACE */}
@@ -56,7 +59,6 @@ export default function GridImage({ cards, sections }: { cards?: any, sections?:
                         {item?.description || "No description provided."}
                       </Text>
                     </Box>
-
                   </Paper>
                 </Box>
               </Box>

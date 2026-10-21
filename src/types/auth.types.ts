@@ -12,10 +12,11 @@ export interface User {
   id: number;
   email: string;
   fullname: string;
+  dashBoard: DashBoard
 }
 
 export interface DashBoard {
-  visitora? : number;
+  visitors? : number;
   certifications? : number,
   projects?: number;
   skills?: number
