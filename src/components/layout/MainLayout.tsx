@@ -15,7 +15,7 @@ export default function MainLayout() {
   return (
     <AppShell
     withBorder={false}
-      header={{ height: mobile ? 40 : 60 }}
+      header={{ height: 40 }}
       navbar={{
         width: mobile? 1: 300,
         breakpoint: "xs",
@@ -26,10 +26,10 @@ export default function MainLayout() {
           backgroundColor: colors.bgBase,
         },
          header: {
-          backgroundColor: colors.bgBase,
+          backgroundColor: colors.text,
         },
         navbar: {
-          backgroundColor: colors.bgBase,
+          backgroundColor: colors.text,
         },
       }}
     >

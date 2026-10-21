@@ -10,51 +10,58 @@ export default function SideBar() {
 
   const mobile = useMediaQuery("(max-width: 768px)");
 
-  const logOut = useLogout()
-  const { isAuthenticated } = useAuthState()
-  const { logout } = useAuthState()
+  const logOut = useLogout();
+  const { isAuthenticated } = useAuthState();
+  const { logout } = useAuthState();
 
-
-  const handleLogout = () => logOut.mutate(undefined, {
-    onSuccess: () => {
-      logout()
-    }
-  })
+  const handleLogout = () =>
+    logOut.mutate(undefined, {
+      onSuccess: () => {
+        logout();
+      },
+    });
   return (
-    <AppShell.Navbar>
-      {mobile && (
-        <Button
-          variant="transparent"
-          ff="Poppins"
-          fw={600}
-          fz={mobile ? 15 : 20}
-          c={colors.text}
-        >
-          CONTACT ME
-        </Button>
-      )}
-
-
-      {isAuthenticated ? (<Button
-        variant="outline"
-        color={colors.accPrimary}
-        size="xs" w={"50%"}
-        loading={logOut.isPending}
-        onClick={handleLogout}
-      >
-        Sign Out
-      </Button>) : (<Button
-        variant="outline"
-        color={colors.accPrimary}
-        size="xs" w={"50%"}
-        loading={logOut.isPending}
-        onClick={handleLogout}
-      >
-        Sign In
-      </Button>)}
-
-
-
+    <AppShell.Navbar h={"100%"}>
+      <Flex direction={"column"} align={"center"}>
+        {isAuthenticated ? (
+          <Button
+            variant="outline"
+            color={colors.accPrimary}
+            size="xs"
+            fz={mobile ? 15 : 20}
+            w={"50%"}
+            loading={logOut.isPending}
+            onClick={handleLogout}
+          >
+            Sign Out
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            color={colors.accPrimary}
+            size="xs"
+            fz={mobile ? 15 : 15}
+            w={"50%"}
+            loading={logOut.isPending}
+            onClick={handleLogout}
+          >
+            Sign In
+          </Button>
+        )}
+        {mobile && (
+          <Button
+            variant="transparent"
+            size="xs"
+            w={"50%"}
+            ff="Poppins"
+            fw={600}
+            fz={mobile ? 15 : 20}
+            c={colors.bgBase}
+          >
+            CONTACT ME
+          </Button>
+        )}
+      </Flex>
     </AppShell.Navbar>
   );
 }
