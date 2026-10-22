@@ -30,7 +30,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
           const isFlipped = !!flippedCards[index];
 
           return (
-            <Grid.Col key={item.id ?? index} span={{ base: 12, sm: 4 }}>
+            <Grid.Col key={item.id ?? index} span={{ base: 12, sm: 3 }}>
               <Box
                 onClick={() => toggleFlip(index)}
                 className="cardPerspective"

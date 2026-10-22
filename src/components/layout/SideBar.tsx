@@ -1,12 +1,22 @@
-import { AppShell, Button, Flex, ActionIcon, Text } from "@mantine/core";
+import {
+  AppShell,
+  Button,
+  Flex,
+  ActionIcon,
+  Text,
+  NavLink,
+} from "@mantine/core";
+import { IconHomeFilled, IconLayoutDashboardFilled } from "@tabler/icons-react";
 
 import { useMediaQuery } from "@mantine/hooks";
 import { useTheme } from "../../context/ThemeContext";
 import { useLogout } from "../../query/auth";
 import useAuthState from "../../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 export default function SideBar() {
   const { colors } = useTheme();
+  const navigate = useNavigate();
 
   const mobile = useMediaQuery("(max-width: 768px)");
 
@@ -23,12 +33,32 @@ export default function SideBar() {
   return (
     <AppShell.Navbar h={"100%"}>
       <Flex direction={"column"} align={"center"}>
+        <NavLink
+          label={
+            <Text size="lg" fw={600} c={colors.accPrimary}>
+              Home
+            </Text>
+          }
+          leftSection={<IconHomeFilled size={20} color={colors.accPrimary} />}
+          onClick={() => console.log("Navigated to Home")}
+        />
+        <NavLink
+          label={
+            <Text size="lg" fw={600} c={colors.accPrimary}>
+              Dashboard
+            </Text>
+          }
+          leftSection={
+            <IconLayoutDashboardFilled size={22} color={colors.accPrimary} />
+          }
+          onClick={() => console.log("Navigated to Home")}
+        />
         {isAuthenticated ? (
           <Button
             variant="outline"
             color={colors.accPrimary}
             size="xs"
-            fz={mobile ? 15 : 20}
+            fz={15}
             w={"50%"}
             loading={logOut.isPending}
             onClick={handleLogout}
@@ -40,7 +70,7 @@ export default function SideBar() {
             variant="outline"
             color={colors.accPrimary}
             size="xs"
-            fz={mobile ? 15 : 15}
+            fz={15}
             w={"50%"}
             loading={logOut.isPending}
             onClick={handleLogout}
@@ -55,7 +85,7 @@ export default function SideBar() {
             w={"50%"}
             ff="Poppins"
             fw={600}
-            fz={mobile ? 15 : 20}
+            fz={15}
             c={colors.bgBase}
           >
             CONTACT ME

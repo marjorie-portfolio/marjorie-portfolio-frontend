@@ -4,6 +4,7 @@ import "@mantine/core/styles.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -22,7 +23,9 @@ createRoot(document.getElementById("root")!).render(
               fontFamily: "Poppins",
             }}
           >
-            <App />
+            <ModalsProvider>
+              <App />
+            </ModalsProvider>
           </MantineProvider>
         </StrictMode>
       </BrowserRouter>

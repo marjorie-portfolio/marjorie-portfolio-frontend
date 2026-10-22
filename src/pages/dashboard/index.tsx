@@ -16,8 +16,10 @@ import { useTheme } from "../../context/ThemeContext";
 
 import PageHeader from "../../components/common/PageHeader";
 import Panel from "./components/Panel";
+import CreateSectionModals from "../../components/modals/create-section";
 
 import useAuthState from "../../store/useAuthStore";
+import { useVisits } from "../../query/analytics";
 
 import { acitvityLogsQueries } from "../../query/acitvity-logs.query";
 import { sectionQueries } from "../../query/sections.query";
@@ -48,10 +50,16 @@ export default function DashBoard() {
   );
 
   const sectionList = sections?.data ?? [];
-  console.log(groupedLogs);
+
   const { user } = useAuthState();
 
-  const visitors = user?.dashBoard.visitors;
+  const { data: visits, isLoading: isLoadingVisits } = useVisits();
+
+  const visitors = !user?.dashBoard.visitors
+    ? visits
+    : user?.dashBoard.visitors;
+
+  const { nameModal, typeModal } = CreateSectionModals();
 
   const cardStyle = {
     border: `3px solid ${colors.accPrimary}`,
@@ -61,12 +69,12 @@ export default function DashBoard() {
   return (
     <Box>
       <Flex align="center" justify="center" direction="column" p={0}>
-        <PageHeader title="DASHBOARD" hideBackButton />
+        <PageHeader title="DASHBOARD" />
 
-        <Grid w="100%" p={mobile ? 16 : 50} gutter="lg" h={"60vh"}>
+        <Grid w="100%" p={mobile ? 16 : 50} h={mobile ? "100%" : "80"}>
           {/* LEFT: Recent Activity */}
-          <Grid.Col span={{ base: 12, md: 5 }}>
-            <Flex h={mobile ? 420 : "70vh"}>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Flex h={mobile ? 420 : "70vh"} w={"100%"}>
               <Panel title="Recent Activity" flex={1}>
                 {isLoading ? (
                   <Text c={colors.textDimmed} fz={12} p="md">
@@ -140,7 +148,7 @@ export default function DashBoard() {
           </Grid.Col>
 
           {/* RIGHT: Features + actions */}
-          <Grid.Col span={{ base: 12, md: 7 }}>
+          <Grid.Col span={{ base: 12, md: 5 }}>
             <Flex direction="column" gap="lg" h={mobile ? "auto" : "70vh"}>
               <Panel title="Sections" flex={1} mih={260}>
                 {isLoadingSections ? (
@@ -178,9 +186,7 @@ export default function DashBoard() {
 
               <Flex gap="lg" h={mobile ? 110 : 120}>
                 <UnstyledButton
-                  onClick={() => {
-                    /* TODO: open create-section modal / navigate */
-                  }}
+                  onClick={nameModal}
                   style={{ ...cardStyle, flex: 2, borderRadius: 16 }}
                 >
                   <Stack justify="center" align="center" gap={0} h="100%">
@@ -208,9 +214,19 @@ export default function DashBoard() {
                     >
                       Visitors
                     </Text>
-                    <Text c={colors.textDimmed} fz={mobile ? 28 : 36} fw={600}>
-                      {visitors}
-                    </Text>
+                    {isLoadingVisits ? (
+                      <Text c={colors.textDimmed} fz={12} p="md">
+                        Loading...
+                      </Text>
+                    ) : (
+                      <Text
+                        c={colors.textDimmed}
+                        fz={mobile ? 28 : 36}
+                        fw={600}
+                      >
+                        {visitors}
+                      </Text>
+                    )}
                   </Stack>
                 </Paper>
               </Flex>

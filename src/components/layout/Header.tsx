@@ -43,8 +43,8 @@ export default function Header({ opened, onClick }: HeaderProps) {
             <Button
               variant="transparent"
               ff="Poppins"
-              fw={600}
-              fz={mobile ? 15 : 20}
+              fw={500}
+              fz={mobile ? 15 : 18}
               c={colors.bgBase} 
             >
               CONTACT ME
