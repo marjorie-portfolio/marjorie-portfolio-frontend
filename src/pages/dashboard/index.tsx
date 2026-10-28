@@ -56,10 +56,10 @@ export default function DashBoard() {
   const { data: visits, isLoading: isLoadingVisits } = useVisits();
 
   const visitors = !user?.dashBoard.visitors
-    ? visits
-    : user?.dashBoard.visitors;
+    ? Number(visits)
+    : Number(user?.dashBoard.visitors);
 
-  const { nameModal, typeModal } = CreateSectionModals();
+  const { nameModal } = CreateSectionModals();
 
   const cardStyle = {
     border: `3px solid ${colors.accPrimary}`,

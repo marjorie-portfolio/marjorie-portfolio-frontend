@@ -12,6 +12,6 @@ export async function fetchSections() {
 export async function createSection(
   reqbody: CreateSectionReq,
 ): Promise<CreateSectionRes> {
-  const response = await api.get("/section/register-section", reqbody);
+  const response = await api.post("/section/register-section", reqbody);
   return response.data
 }
