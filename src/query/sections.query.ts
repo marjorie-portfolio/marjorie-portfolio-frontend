@@ -1,13 +1,16 @@
-import {queryOptions} from "@tanstack/react-query";
-import {fetchSections} from "../api/sections.api.ts";
+import { queryOptions } from "@tanstack/react-query";
+import { fetchSections } from "../api/sections.api";
 
-export const sectionsKey ={
-    all: ["sections"] as const,
-}
+export const sectionsKey = {
+  all: ["sections"] as const,
+  byId: (id: number) => [...sectionsKey.all, id] as const,
+};
 
 export const sectionQueries = {
-    all: () => queryOptions({
-        queryKey: sectionsKey.all,
-        queryFn: fetchSections,
-    })
-}
+  all: (id: number) =>
+    queryOptions({
+      queryKey: sectionsKey.byId(id),
+      queryFn: () => fetchSections(id),
+    
+    }),
+};

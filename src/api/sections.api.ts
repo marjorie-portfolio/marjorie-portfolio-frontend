@@ -2,10 +2,13 @@ import api from "../services/axios";
 import type {
   CreateSectionReq,
   CreateSectionRes,
+  Section
 } from "../types/section.types";
 
-export async function fetchSections() {
-  const response = await api.get("/section");
+export async function fetchSections(id?: number) {
+  const response = await api.get<Section[]>("/section", {
+    params: { sectionId:id }
+  });
   return response.data;
 }
 

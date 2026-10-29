@@ -1,28 +1,45 @@
+import { AppShell, Button, Flex, Divider, Text, NavLink } from "@mantine/core";
 import {
-  AppShell,
-  Button,
-  Flex,
-  ActionIcon,
-  Text,
-  NavLink,
-} from "@mantine/core";
-import { IconHomeFilled, IconLayoutDashboardFilled } from "@tabler/icons-react";
-
+  IconHomeFilled,
+  IconLayoutDashboardFilled,
+  IconCloverFilled,
+} from "@tabler/icons-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
+import { useQuery } from "@tanstack/react-query";
+
 import { useTheme } from "../../context/ThemeContext";
 import { useLogout } from "../../query/auth";
 import useAuthState from "../../store/useAuthStore";
-import { useNavigate } from "react-router-dom";
+import { sectionQueries } from "../../query/sections.query";
 
-export default function SideBar() {
+type SideBarProps = {
+  onNavigate?: () => void;
+};
+
+export default function SideBar({ onNavigate }: SideBarProps) {
+  const { pathname } = useLocation();
   const { colors } = useTheme();
   const navigate = useNavigate();
 
+  const goTo = (path: string) => {
+    navigate(path);
+    onNavigate?.();
+  };
+
+  const isActive = (path: string) => pathname === path;
+
+  const linkStyles = (active: boolean) => ({
+    root: {
+      borderRadius: 8,
+      backgroundColor: active ? colors.bgBase : "transparent",
+    },
+  });
   const mobile = useMediaQuery("(max-width: 768px)");
+  const { data: sections } = useQuery(sectionQueries.all());
 
   const logOut = useLogout();
-  const { isAuthenticated } = useAuthState();
-  const { logout } = useAuthState();
+  const { isAuthenticated, logout } = useAuthState();
 
   const handleLogout = () =>
     logOut.mutate(undefined, {
@@ -30,65 +47,112 @@ export default function SideBar() {
         logout();
       },
     });
+
   return (
-    <AppShell.Navbar h={"100%"}>
-      <Flex direction={"column"} align={"center"}>
+    <AppShell.Navbar>
+      <Flex h={"100vh"} direction={"column"} align={"center"} w={"100%"}>
         <NavLink
+          active={isActive("/")}
+          styles={linkStyles(isActive("/"))}
           label={
             <Text size="lg" fw={600} c={colors.accPrimary}>
               Home
             </Text>
           }
           leftSection={<IconHomeFilled size={20} color={colors.accPrimary} />}
-          onClick={() => console.log("Navigated to Home")}
-        />
-        <NavLink
-          label={
-            <Text size="lg" fw={600} c={colors.accPrimary}>
-              Dashboard
-            </Text>
-          }
-          leftSection={
-            <IconLayoutDashboardFilled size={22} color={colors.accPrimary} />
-          }
-          onClick={() => console.log("Navigated to Home")}
+          onClick={() => goTo("/")}
         />
         {isAuthenticated ? (
-          <Button
-            variant="outline"
-            color={colors.accPrimary}
-            size="xs"
-            fz={15}
-            w={"50%"}
-            loading={logOut.isPending}
-            onClick={handleLogout}
-          >
-            Sign Out
-          </Button>
+          <>
+            <NavLink
+              active={isActive("/dashboard")}
+              styles={linkStyles(isActive("/dashboard"))}
+              label={
+                <Text size="lg" fw={600} c={colors.accPrimary}>
+                  Dashboard
+                </Text>
+              }
+              leftSection={
+                <IconLayoutDashboardFilled
+                  size={22}
+                  color={colors.accPrimary}
+                />
+              }
+              onClick={() => goTo("/dashboard")}
+            />
+
+            <Divider
+              w={"100%"}
+              my="sm"
+              label={
+                <Text size="xs" fw={700} c={colors.accPrimary}>
+                  SECTIONS
+                </Text>
+              }
+              labelPosition="center"
+              size="sm"
+              color={colors.accPrimary}
+            />
+
+            {sections?.data?.map((section, i) => {
+              const path = `/section-${section.slug}`;
+              return (
+                <NavLink
+                  key={section.id ?? section.title}
+                  active={isActive(path)}
+                  styles={linkStyles(isActive(path))}
+                  ml={20}
+                  label={
+                    <Text size="md" fw={600} c={colors.accPrimary}>
+                      {section.title}
+                    </Text>
+                  }
+                  leftSection={
+                    <IconCloverFilled size={20} color={colors.accPrimary} />
+                  }
+                  onClick={() => goTo(path)}
+                />
+              );
+            })}
+
+            {mobile && (
+              <Button
+                variant={"outline"}
+                color={colors.accPrimary}
+                size="xs"
+                w={"50%"}
+                ff="Poppins"
+                fw={600}
+                fz={15}
+              >
+                CONTACT ME
+              </Button>
+            )}
+
+            <Button
+              color={colors.accPrimary}
+              size="xs"
+              fz={15}
+              w={"50%"}
+              mt="auto" // Pushes the button nicely down if needed
+              mb="md"
+              loading={logOut.isPending}
+              onClick={handleLogout}
+            >
+              Sign Out
+            </Button>
+          </>
         ) : (
           <Button
-            variant="outline"
             color={colors.accPrimary}
             size="xs"
             fz={15}
             w={"50%"}
+            mt="md"
             loading={logOut.isPending}
-            onClick={handleLogout}
+            onClick={() => goTo("/sign-in")}
           >
             Sign In
-          </Button>
-        )}
-        {mobile && (
-          <Button
-            variant="transparent"
-            size="xs"
-            w={"50%"}
-            ff="Poppins"
-            fw={600}
-            fz={15}
-            c={colors.bgBase}
-          >
-            CONTACT ME
           </Button>
         )}
       </Flex>

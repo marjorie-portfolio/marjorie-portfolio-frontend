@@ -34,7 +34,7 @@ export default function MainLayout() {
       }}
     >
       <Header opened={opened} onClick={() => toggle()} />
-      <SideBar />
+      <SideBar onNavigate={() => toggle()}/>
       
       <Main/>
     </AppShell>

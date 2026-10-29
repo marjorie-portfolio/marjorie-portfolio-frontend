@@ -5,6 +5,7 @@ import Home from "../pages/home";
 import SignIn from "../pages/sign-in";
 
 import DashBoard from "../pages/dashboard";
+import Section from "../pages/sections";
 
 export const routes = [
   {
@@ -25,6 +26,10 @@ export const routes = [
           {
             path: "/dashboard",
             element: <DashBoard />,
+          },
+          {
+            path: "/section/:slug/:id",
+            element: <Section />,
           },
         ],
       },

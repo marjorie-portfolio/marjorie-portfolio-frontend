@@ -11,3 +11,11 @@ id: number;
   created_at: string;
   updated_at: string;
 }
+
+export interface Section {
+  id: number;
+  title: string;
+  slug: string;
+  cards: unknown[];
+  items: unknown[];
+}
