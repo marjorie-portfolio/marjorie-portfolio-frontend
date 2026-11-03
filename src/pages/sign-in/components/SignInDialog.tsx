@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Paper,
   Text,
@@ -15,8 +15,14 @@ import { useTheme } from "../../../context/ThemeContext";
 
 import { useLogin } from "../../../query/auth";
 import useAuthState from "../../../store/useAuthStore";
+import { fetchCurrentUser } from "../../../api/auth.api";
 
 import type { FetchUserRequest } from "../../../types/auth.types";
+
+const GUEST_CREDENTIALS: FetchUserRequest = {
+  emailOrUsername: "guest",
+  password: "Passw0rd!Guest",
+};
 
 interface SignInDialogProps {
   mobile: boolean;
@@ -24,6 +30,7 @@ interface SignInDialogProps {
 
 export default function SignInDialog({ mobile }: SignInDialogProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuthState();
 
   const { colors } = useTheme();
@@ -37,12 +44,16 @@ export default function SignInDialog({ mobile }: SignInDialogProps) {
     password: "",
   });
 
+  const finishLogin = async () => {
+    const currentUser = await fetchCurrentUser();
+    if (currentUser.user) login(currentUser.user);
+    const state = location.state as { from?: string; intent?: { type: "add" | "edit" | "delete"; itemId?: number } } | null;
+    navigate(state?.from ?? "/dashboard", { replace: true, state: state?.intent ? { intent: state.intent } : undefined });
+  };
+
   const handleSubmit = () =>
     loginMutation.mutate(loginForm, {
-      onSuccess: (data) => {
-        login(data.user);
-        navigate("/dashboard");
-      },
+      onSuccess: () => void finishLogin(),
 
       onError: (error) => {
         if (axios.isAxiosError(error)) {
@@ -131,7 +142,7 @@ export default function SignInDialog({ mobile }: SignInDialogProps) {
                 },
               }}
             />
-            <Flex w={"100%"} align={"center"} justify={"center"}>
+            <Flex w={"100%"} align={"center"} justify={"center"} gap="sm">
               <Button
                 w={100}
                 variant="outline"
@@ -140,6 +151,9 @@ export default function SignInDialog({ mobile }: SignInDialogProps) {
                 loading={loginMutation.isPending}
               >
                 SIGN-IN
+              </Button>
+              <Button variant="light" color={colors.accPrimary} onClick={() => loginMutation.mutate(GUEST_CREDENTIALS, { onSuccess: () => void finishLogin() })} loading={loginMutation.isPending}>
+                GUEST
               </Button>
             </Flex>
             {errorMessage && (

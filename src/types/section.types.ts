@@ -17,12 +17,21 @@ export interface CreateSectionReq {
    };
  }
 
+ export type ItemType = "type_1" | "type_2" | "type_3";
+
  export interface SectionItem {
    id: number;
+   sectionId: number;
    title: string;
    description: string | null;
-   image: string | null;
-   sectionId: number;
+   imageUrl: string | null;
+   displayOrder: number | null;
+   createdAt: string | null;
+   updatedAt: string | null;
+   imagePublicId: string | null;
+   itemType: ItemType | null;
+   expires_at: string | null;
+   expiresAt?: string | null;
  }
 
  export interface Section {
@@ -31,6 +40,8 @@ export interface CreateSectionReq {
    slug: string;
    cards: unknown[];
    items: SectionItem[];
+    expires_at: string | null;
+    expiresAt?: string | null;
  }
 
 export interface SectionsResponse {

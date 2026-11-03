@@ -18,3 +18,15 @@ export async function createSection(
   const response = await api.post("/section/register-section", reqbody);
   return response.data
 }
+
+export async function editSection(sectionId: number, sectionName: string) {
+  const body = new FormData();
+  body.append("sectionName", sectionName);
+  const response = await api.patch(`/section/edit-section/${sectionId}`, body);
+  return response.data;
+}
+
+export async function deleteSection(sectionId: number) {
+  const response = await api.delete(`/section/delete-section/${sectionId}`);
+  return response.data;
+}

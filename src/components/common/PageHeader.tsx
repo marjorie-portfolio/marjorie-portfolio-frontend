@@ -7,15 +7,17 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useTheme } from "../../context/ThemeContext";
 
 type PageHeaderProps = {
-  title: string;
+  title: ReactNode;
   hideBackButton?: boolean;
   action?: ReactNode;
+  uppercase?: boolean;
 };
 
 export default function PageHeader({
   title,
   hideBackButton = false,
   action,
+  uppercase = true,
 }: PageHeaderProps) {
   const { colors } = useTheme();
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ export default function PageHeader({
 
       <Group justify="center" h="100%" px="md">
         <Text ta="center" ff="Climate Crisis" c={colors.accPrimary} fz={mobile? 20 :45}>
-          {title}
+          <span style={{ textTransform: uppercase ? "uppercase" : "none" }}>{title}</span>
         </Text>
         {action}
       </Group>

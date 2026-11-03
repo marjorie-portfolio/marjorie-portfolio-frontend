@@ -5,6 +5,10 @@ function toFormData(values: ItemFormValues) {
   const formData = new FormData();
   formData.append("title", values.title);
   formData.append("description", values.description);
+  formData.append("itemType", values.itemType);
+  if (values.image instanceof File) {
+    formData.append("image", values.image);
+  }
   return formData;
 }
 

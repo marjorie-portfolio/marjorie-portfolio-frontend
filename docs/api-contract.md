@@ -2,6 +2,7 @@
 
 > **Source of truth: the backend** (`marjorie-portfolio-backend`).
 > Generated from the backend code. Never invent an endpoint, field, or response shape that is not in this file. If one is missing or marked `UNKNOWN`, stop and ask.
+> This version includes the current authentication, role, item-type, expiration, and cleanup changes.
 
 ## Frontend rules
 
@@ -11,7 +12,20 @@
 - Endpoints marked **multipart** take `FormData`. Do not set the `Content-Type` header manually; let the browser add the boundary.
 - Backend CORS only allows `CLIENT_URL` (`http://localhost:5173`) with credentials.
 - Every Prisma `DateTime` arrives as an ISO-8601 string.
-- Naming is mixed on purpose, so copy the field names exactly: Section and Card use `snake_case` (`display_order`), SectionItem uses `camelCase` (`displayOrder`).
+- Naming is mixed on purpose, so copy the field names exactly: Section and Card use `snake_case` (`display_order`), SectionItem uses `camelCase` (`displayOrder`). Expiration fields are always `expires_at` (snake_case), even on SectionItem.
+- **Guest accounts:** anything a `guest` creates (sections and items) expires 5 minutes after creation and is deleted by the backend on the next list request. The UI must tolerate guest-created content disappearing.
+
+## Server configuration
+
+Defined in `src/server.js` and `src/app.js`.
+
+- Port: `8000`, no global prefix.
+- JSON parser: `express.json()`; cookies: `cookie-parser`.
+- CORS: origin `process.env.CLIENT_URL`, credentials enabled.
+- Error middleware: `src/middleware/error.middleware.js`.
+- Required env vars: `DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+- Routers mounted at: `/auth`, `/analytics`, `/section`, `/item`, `/cards`, `/activity-logs`.
+- Uploads (Multer memory storage): field name `image`, image MIME types only, max 5 MB, max 2 files.
 
 ## Summary
 
@@ -23,13 +37,13 @@
 | POST | `/auth/refresh` | refresh cookie | none | Refresh session |
 | GET | `/auth/currentUser` | yes | none | Current user + dashboard data |
 | GET | `/section/` | none | none | List sections (optional `?sectionId=`) |
-| POST | `/section/register-section` | yes | JSON | Create section |
-| PATCH | `/section/edit-section/:sectionId` | yes | multipart | Edit section (**broken**, see Known issues) |
+| POST | `/section/register-section` | yes | JSON | Create section (guest sections expire) |
+| PATCH | `/section/edit-section/:sectionId` | yes | multipart | Edit section 
 | DELETE | `/section/delete-section/:sectionId` | yes | none | Delete section and its items/cards |
 | GET | `/item/` | none | none | List items (optional `?sectionId=`) |
-| POST | `/item/:sectionId/items` | **none** | multipart | Create item |
-| PATCH | `/item/:sectionId/items/:itemId` | **none** | multipart | Update item |
-| DELETE | `/item/:sectionId/items/:itemId` | **none** | none | Delete item |
+| POST | `/item/:sectionId/items` | **yes** | multipart | Create item (`itemType` required) |
+| PATCH | `/item/:sectionId/items/:itemId` | **yes** | multipart | Update item (`itemType` required) |
+| DELETE | `/item/:sectionId/items/:itemId` | **yes** | none | Delete item |
 | GET | `/cards` or `/cards/:sectionId` | none | none | List cards |
 | POST | `/cards/register-cards/:sectionId` | yes | JSON | Create many cards |
 | PATCH | `/cards/update-card/:cardId` | yes | JSON | Update card |
@@ -42,11 +56,10 @@
 
 | Endpoint | Problem | Frontend handling |
 |---|---|---|
-| `PATCH /section/edit-section/:sectionId` | Service returns an undefined variable and the controller reads `req.file.image` instead of `req.file`. Success response is `UNKNOWN`. | Do not build section rename/image edit until the backend is fixed. |
+| `PATCH /section/edit-section/:sectionId` | Controller reads `req.file.image` instead of `req.file`; service stores the update in `item` but returns undefined `section`; service references undefined `sectionType`; uploaded image values are computed but never written to the Section model. Success response is `UNKNOWN`. | Do not build section rename/image edit until the backend is fixed. |
 | `GET /activity-logs/` | Controller never imports `prisma`, so it throws a `ReferenceError`. Success response is `UNKNOWN`. | Do not rely on it until fixed. |
-| `POST /item/:sectionId/items` | Controller reads `sectionType` from `req.params`, but the route has no such param, so it is always `undefined` and type-specific validation is not selected. | Send `title` always; treat `description` and `image` as optional. |
-| `PATCH /item/:sectionId/items/:itemId` | Controller reads `sectionItemType` but passes `sectionType`, so the service never gets it. The success message wrongly says `"Item added successfully."` | Do not send or depend on an item type. Do not show the backend message to users. |
-| Item routes (POST/PATCH/DELETE) | No `authenticate` middleware. | Backend concern. Do not assume they are protected. |
+| `PATCH /item/:sectionId/items/:itemId` | Service returns the item directly, but the controller destructures `{ updated }`, so `data` serializes as `{}`. The success message also wrongly says `"Item added successfully."` | Do **not** read `data.updated`. After a successful PATCH, refetch the item/section or merge your own local values. Ignore the backend message. |
+| `POST /auth/refresh` | Selects only `id` from the user but passes `user.role` to token generation, so refreshed tokens may lose the `role` claim. | A refreshed session may no longer count as `guest`/other role. Do not rely on role surviving a refresh. |
 | `POST /cards/register-cards/:sectionId` | Reads `section.id` before checking `section` exists, so a missing section may return a generic 500 instead of 400. | Handle both 400 and 500. |
 
 ## Global error responses
@@ -62,8 +75,6 @@ Every error returns `{ "message": string }`.
 | 401 | Auth failure | `"Invalid access token"`, `"Unauthorized"`, `"Session expired, please log in again"` |
 | 404 | Prisma record missing | `"Record not found."` |
 | 500 | Anything else | `"Server Error Marj"` |
-
-Uploads: field name `image`, images only, max 5 MB.
 
 ---
 
@@ -90,13 +101,17 @@ Success `201`:
 }
 ```
 
+The response does not return `username`, `role`, or `password`.
+
 Errors `400`: validation messages (e.g. `"Invalid email address"`), `"User already exists"`.
 
 ## POST `/auth/login`
 
-Body (JSON): `{ emailOrUsername: string, password: string }`
+Body (JSON): `{ emailOrUsername: string, password: string }` (both required).
 
 Success `200`: `{ "message": "Login successful." }` and sets `accessToken` (15 min) and `refreshToken` (24 h) cookies.
+
+The JWT payload is `{ id: string; role?: string }`. The role is read server-side (`req.user.role`); the frontend cannot read it from the cookie.
 
 Errors: `400` `"Email or username is required"` / `"Password is required"` / `"User doesn't exist"`; `401` `"Invalid email/username or password"`.
 
@@ -106,7 +121,7 @@ No body. Success `200`: `{ "message": "Logged out successfully." }` and clears b
 
 ## POST `/auth/refresh`
 
-No body. Needs the `refreshToken` cookie. Success `200`: `{ "message": "Session refreshed" }` and resets both cookies.
+No body. Needs the `refreshToken` cookie. Success `200`: `{ "message": "Session refreshed" }` and resets both cookies. See Known issues regarding the `role` claim.
 
 Errors `401`: `"Refresh token not found"`, `"Invalid or expired refresh token"`, `"User not found"`.
 
@@ -128,7 +143,9 @@ Success `200`:
 }
 ```
 
-Errors: `401` (see global), `404` `"User not found"`.
+The response does not include `role`.
+
+Errors: `401` `"Invalid access token"` / `"Unauthorized"` / `"Session expired, please log in again"`, `404` `"User not found"`.
 
 ---
 
@@ -137,6 +154,8 @@ Errors: `401` (see global), `404` `"User not found"`.
 ## GET `/section/`
 
 Query: `sectionId` (number, optional). Without it, returns all sections.
+
+Before listing, the backend deletes expired sections (`expires_at < now`).
 
 Success `200`:
 
@@ -148,11 +167,17 @@ Success `200`:
 }
 ```
 
-`items` is `SectionItem[]` and `cards` is `Card[]`. **For the Section page, call `GET /section/?sectionId=<id>` and use `data[0]`.**
+`items` is `SectionItem[]` and `cards` is `Card[]`. The query selects only `id`, `title`, `slug`, `items`, `cards`, so **`expires_at` is not included on the section itself** here.
+
+**For the Section page, call `GET /section/?sectionId=<id>` and use `data[0]`.**
+
+Errors: `400` `"Related record does not exist (invalid sectionId?)."`, `404` `"Record not found."`, `500` `"Server Error Marj"`.
 
 ## POST `/section/register-section`
 
-Auth required. Body (JSON): `{ "sectionName": string }` (required; no schema validation, must be a string).
+Auth required. Body (JSON): `{ "sectionName": string }` (required; no schema validation, must be a truthy string). The route also accepts an `image` upload, but it is ignored on creation.
+
+If `req.user.role === "guest"`, the section gets `expires_at = now + 5 minutes`. For any other role, `expires_at` is `null`.
 
 Success `200`:
 
@@ -167,7 +192,8 @@ Success `200`:
       "display_order": 0,
       "is_visible": true,
       "created_at": "ISO",
-      "updated_at": "ISO"
+      "updated_at": "ISO",
+      "expires_at": "ISO | null"
     }
   }
 }
@@ -179,9 +205,11 @@ Errors: `400` `"Section is required!"`, `400` `"A record with that slug already 
 
 ## PATCH `/section/edit-section/:sectionId`
 
-**Broken, see Known issues.** Auth required. Multipart: `sectionName` (string), `image` (file, optional). Success response `UNKNOWN`.
+**Broken, see Known issues.** Auth required. Multipart: `sectionName` (string, not schema-validated), `image` (file, optional). Success response `UNKNOWN`.
 
-Errors: `400` `"Section ID and Name are required!"`, `404` `"Record not found."`.
+Intended shape (unverified): `{ "message": "Section updated successfully.", "data": { "updated": UNKNOWN } }`
+
+Errors: `400` `"Section ID and Name are required!"`, `404` `"Record not found."`, `400` Multer errors.
 
 ## DELETE `/section/delete-section/:sectionId`
 
@@ -200,27 +228,40 @@ Success `200`:
 }
 ```
 
-Errors: `404` `"Record not found."`.
+Errors: `404` `"Record not found."`, `400` `"Related record does not exist (invalid sectionId?)."`.
 
 ---
 
 # Items
 
+`itemType` is one of `"type_1" | "type_2" | "type_3"`. Required fields depend on it:
+
+| `itemType` | Required fields |
+|---|---|
+| `type_1` | `title`, `description` |
+| `type_2` | `title`, `image` |
+| `type_3` | `title`, `description`, `image` |
+
 ## GET `/item/`
 
 Query: `sectionId` (number, optional).
 
-Success `200`: `{ "data": SectionItem[] }`
+Before querying, the backend deletes expired items (`expires_at < now`).
+
+Success `200`: `{ "data": SectionItem[] }` (includes `itemType` and `expires_at`).
 
 ## POST `/item/:sectionId/items`
 
-No auth. **Multipart.** Params: `sectionId` (number).
+**Auth required. Multipart.** Params: `sectionId` (number).
 
 | Field | Type | Notes |
 |---|---|---|
-| `title` | string | Required by the database. Omitting it causes a Prisma error. |
-| `description` | string | Optional (stored as `null` if empty) |
-| `image` | file | Optional |
+| `itemType` | string | **Required.** `type_1`, `type_2`, or `type_3` |
+| `title` | string | Required for every type |
+| `description` | string | Required for `type_1` and `type_3` |
+| `image` | file | Required for `type_2` and `type_3` |
+
+If `req.user.role === "guest"`, the item gets `expires_at = now + 5 minutes`. Otherwise `expires_at` is `null`.
 
 Success `200`:
 
@@ -228,23 +269,32 @@ Success `200`:
 { "message": "Item added successfully.", "data": { "item": SectionItem } }
 ```
 
-Errors: `400` item validator messages (`"Invalid input. Title and description are required."`, etc.), `400` invalid `sectionId`.
+Errors `400`:
+
+- `"Invalid input. A valid itemType is required."`
+- `"Invalid input. Title and description are required."` (`type_1`)
+- `"Invalid input. Image and title are required."` (`type_2`)
+- `"Invalid input. Title, image and description are required."` (`type_3`)
+- `"Related record does not exist (invalid sectionId?)."`
+- Multer: `"File is too large"` / `"Unexpected file field \"<name>\""`
 
 ## PATCH `/item/:sectionId/items/:itemId`
 
-No auth. **Multipart.** Params: `sectionId`, `itemId` (numbers). Fields: `title`, `description`, `image` (all optional, none formally validated).
+**Auth required. Multipart.** Params: `sectionId`, `itemId` (numbers). The item must belong to the supplied `sectionId`.
 
-Success `200` (message text is wrong on the backend, ignore it):
+Fields: `itemType` (**required by the validator**, same three values), plus `title`, `description`, `image` following the same per-type rules as POST.
+
+Actual success `200` (message text is wrong on the backend, ignore it; **`data` is empty because of the controller bug, see Known issues**):
 
 ```json
-{ "message": "Item added successfully.", "data": { "updated": SectionItem } }
+{ "message": "Item added successfully.", "data": {} }
 ```
 
-Errors: `404` `"Item not found"`, `400` validator messages.
+Errors: `404` `"Item not found"`, `400` the same validator messages as POST, `400` Multer errors.
 
 ## DELETE `/item/:sectionId/items/:itemId`
 
-No auth, no body. Only `itemId` is used by the backend.
+**Auth required.** No body. Only `itemId` is used by the backend; `sectionId` is ignored.
 
 Success `200`:
 
@@ -282,11 +332,11 @@ Success `200`:
 
 ## POST `/cards/register-cards/:sectionId`
 
-Auth required. Body (JSON): `{ "descriptions": string[] }` (non-empty array).
+Auth required. Body (JSON): `{ "descriptions": string[] }` (non-empty array; element types are not validated).
 
 Success `200`: `{ "count": 2 }`
 
-Errors: `400` `"descriptions must be a non-empty array"`, `400` invalid `sectionId`.
+Errors: `400` `"descriptions must be a non-empty array"`, `400` invalid `sectionId` (may instead be a generic `500`, see Known issues).
 
 ## PATCH `/cards/update-card/:cardId`
 
@@ -324,7 +374,7 @@ No auth. Success `200`: a bare JSON number, e.g. `42`.
 
 ## GET `/activity-logs/`
 
-Auth required. **Broken, see Known issues.** Intended response (unverified):
+Auth required. **Broken, see Known issues.** The controller groups up to 50 records by date. Date labels are `Today`, `Yesterday`, or a localized U.S. date such as `November 3, 2026`. Intended response (unverified):
 
 ```json
 [
@@ -342,6 +392,17 @@ Auth required. **Broken, see Known issues.** Intended response (unverified):
 # TypeScript types
 
 ```ts
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  password: string;
+  createdAt: string | null;
+  firstName: string;
+  lastName: string;
+  role: string | null;
+}
+
 export interface Section {
   id: number;
   title: string;
@@ -350,6 +411,8 @@ export interface Section {
   is_visible: boolean | null;
   created_at: string | null;
   updated_at: string | null;
+  /** Returned by section creation; NOT selected by GET /section/ */
+  expires_at: string | null;
 }
 
 /** Returned by GET /section/ */
@@ -361,6 +424,8 @@ export interface SectionSummary {
   cards: Card[];
 }
 
+export type ItemType = "type_1" | "type_2" | "type_3";
+
 export interface SectionItem {
   id: number;
   sectionId: number;
@@ -371,7 +436,8 @@ export interface SectionItem {
   createdAt: string | null;
   updatedAt: string | null;
   imagePublicId: string | null;
-  itemType: string | null;
+  itemType: ItemType | null;
+  expires_at: string | null;
 }
 
 export interface Card {
@@ -404,6 +470,11 @@ export interface CurrentUser {
   email: string;
   fullname: string;
   dashBoard: { visitors: number };
+}
+
+export interface WebsiteVisit {
+  id: number;
+  visitedAt: string | null;
 }
 
 export type ActivityAction = "CREATED" | "UPDATED" | "DELETED";

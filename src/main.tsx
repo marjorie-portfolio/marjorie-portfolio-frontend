@@ -11,6 +11,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import AppProvider from "./provider/AppProvider.tsx";
 import App from "./App.tsx";
+import { mantineTheme } from "./theme/mantine";
 
 const queryClient = new QueryClient();
 
@@ -19,11 +20,7 @@ createRoot(document.getElementById("root")!).render(
     <AppProvider>
       <BrowserRouter>
         <StrictMode>
-          <MantineProvider
-            theme={{
-              fontFamily: "Poppins",
-            }}
-          >
+          <MantineProvider theme={mantineTheme}>
             <ModalsProvider>
               <Notifications />
               <App />

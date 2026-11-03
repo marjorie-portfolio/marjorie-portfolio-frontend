@@ -6,8 +6,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sectionMutations } from "../../../mutations/sections.mutation";
 import { sectionsKey } from "../../../query/sections.query";
+import { useTheme } from "../../../context/ThemeContext";
 
-export default function CreateSectionModals() {
+function CreateSectionForm() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
@@ -23,14 +24,62 @@ export default function CreateSectionModals() {
       notifications.show({
         title: "Unable to create section",
         message: "Please try again.",
-        color: "red",
+        color: "primary",
       });
     },
   });
 
+  return (
+    <Stack gap="xl" mt="md">
+      <TextInput
+        value={name}
+        onChange={(event) => {
+          setName(event.currentTarget.value);
+          if (error) setError(null);
+        }}
+        error={error}
+        label={
+          <Text fw={800} size="xs" style={{ letterSpacing: "0.5px" }}>
+            SECTION NAME:
+          </Text>
+        }
+        placeholder="e.g About me, Skills, Journey"
+        radius="xl"
+        size="md"
+      />
+      <Button
+        fullWidth
+        radius="xl"
+        size="md"
+        color="pink"
+        loading={createMutation.isPending}
+        onClick={() => {
+          const trimmedName = name.trim();
+          if (!trimmedName) {
+            setError("Section name is required.");
+            return;
+          }
+          if (trimmedName.length > 50) {
+            setError("Section name must be 50 characters or fewer.");
+            return;
+          }
+          createMutation.mutate({ sectionName: trimmedName });
+        }}
+        style={{
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          fontWeight: 700,
+        }}
+      >
+        CONTINUE
+      </Button>
+    </Stack>
+  );
+}
+
+export default function CreateSectionModals() {
+  const { colors } = useTheme();
   const nameModal = () => {
-    setName("");
-    setError(null);
     modals.open({
       title: (
         <Box style={{ textAlign: 'center', width: '100%' }}>
@@ -46,66 +95,13 @@ export default function CreateSectionModals() {
       radius: 'lg',
       padding: 'md',
       styles: {
-        header: {
-          borderBottom: '1px solid #e0e0e0',
-          paddingBottom: '12px',
-        },
+        content: { backgroundColor: colors.bgSurface },
+        header: { backgroundColor: colors.bgSurface, borderBottom: `1px solid ${colors.bgHighlight}`, paddingBottom: "12px" },
+        body: { backgroundColor: colors.bgSurface },
+        title: { color: colors.text },
+        close: { color: colors.text },
       },
-      children: (
-        <Stack gap="xl" mt="md">
-          <TextInput
-            value={name}
-            onChange={(event) => {
-              setName(event.currentTarget.value);
-              if (error) setError(null);
-            }}
-            error={error}
-            label={
-              <Text fw={800} size="xs" style={{ letterSpacing: '0.5px' }}>
-                SECTION NAME:
-              </Text>
-            }
-            placeholder="e.g About me, Skills, Journey"
-            radius="xl"
-            size="md"
-            styles={{
-              input: {
-                backgroundColor: '#ffffff',
-                fontWeight: 600,
-                color: '#495057',
-              },
-            }}
-          />
-
-          <Button
-            fullWidth
-            radius="xl"
-              
-            size="md"
-            color="pink"
-            loading={createMutation.isPending}
-            onClick={() => {
-              const trimmedName = name.trim();
-              if (!trimmedName) {
-                setError("Section name is required.");
-                return;
-              }
-              if (trimmedName.length > 50) {
-                setError("Section name must be 50 characters or fewer.");
-                return;
-              }
-              createMutation.mutate({ sectionName: trimmedName });
-            }}
-            style={{
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              fontWeight: 700,
-            }}
-          >
-            CONTINUE
-          </Button>
-        </Stack>
-      ),
+      children: <CreateSectionForm />,
     });
   };
 

@@ -9,10 +9,16 @@ export interface FetchUserResponse {
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
-  fullname: string;
-  dashBoard: DashBoard
+  username: string;
+  password?: string;
+  createdAt?: string | null;
+  firstName?: string;
+  lastName?: string;
+  fullname?: string;
+  role: "owner" | "guest" | null;
+  dashBoard?: DashBoard;
 }
 
 export interface DashBoard {

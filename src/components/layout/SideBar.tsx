@@ -69,86 +69,80 @@ export default function SideBar({ onNavigate }: SideBarProps) {
           leftSection={<IconHomeFilled size={20} color={colors.accPrimary} />}
           onClick={() => goTo("/")}
         />
-        {isAuthenticated ? (
-          <>
+
+        <NavLink
+          active={isActive("/dashboard")}
+          styles={linkStyles(isActive("/dashboard"))}
+          label={
+            <Text size="lg" fw={600} c={colors.accPrimary}>
+              Dashboard
+            </Text>
+          }
+          leftSection={
+            <IconLayoutDashboardFilled size={22} color={colors.accPrimary} />
+          }
+          onClick={() => goTo("/dashboard")}
+        />
+
+        <Divider
+          w={"100%"}
+          my="sm"
+          label={
+            <Text size="xs" fw={700} c={colors.accPrimary}>
+              SECTIONS
+            </Text>
+          }
+          labelPosition="center"
+          size="sm"
+          color={colors.accPrimary}
+        />
+
+        {sections?.data?.map((section) => {
+          const path = `/section/${section.id}`;
+          return (
             <NavLink
-              active={isActive("/dashboard")}
-              styles={linkStyles(isActive("/dashboard"))}
+              key={section.id ?? section.title}
+              active={isActive(path)}
+              styles={linkStyles(isActive(path))}
               label={
-                <Text size="lg" fw={600} c={colors.accPrimary}>
-                  Dashboard
+                <Text size="md" fw={600} c={colors.accPrimary}>
+                  {section.title}
                 </Text>
               }
               leftSection={
-                <IconLayoutDashboardFilled
-                  size={22}
-                  color={colors.accPrimary}
-                />
+                <IconCloverFilled size={20} color={colors.accPrimary} />
               }
-              onClick={() => goTo("/dashboard")}
+              onClick={() => goTo(path)}
             />
+          );
+        })}
 
-            <Divider
-              w={"100%"}
-              my="sm"
-              label={
-                <Text size="xs" fw={700} c={colors.accPrimary}>
-                  SECTIONS
-                </Text>
-              }
-              labelPosition="center"
-              size="sm"
-              color={colors.accPrimary}
-            />
-
-            {sections?.data?.map((section) => {
-              const path = `/section/${section.id}`;
-              return (
-                <NavLink
-                  key={section.id ?? section.title}
-                  active={isActive(path)}
-                  styles={linkStyles(isActive(path))}
-                  ml={20}
-                  label={
-                    <Text size="md" fw={600} c={colors.accPrimary}>
-                      {section.title}
-                    </Text>
-                  }
-                  leftSection={
-                    <IconCloverFilled size={20} color={colors.accPrimary} />
-                  }
-                  onClick={() => goTo(path)}
-                />
-              );
-            })}
-
-            {mobile && (
-              <Button
-                variant={"outline"}
-                color={colors.accPrimary}
-                size="xs"
-                w={"50%"}
-                ff="Poppins"
-                fw={600}
-                fz={15}
-              >
-                CONTACT ME
-              </Button>
-            )}
-
-            <Button
-              color={colors.accPrimary}
-              size="xs"
-              fz={15}
-              w={"50%"}
-              mt="auto" // Pushes the button nicely down if needed
-              mb="md"
-              loading={logOut.isPending}
-              onClick={handleLogout}
-            >
-              Sign Out
-            </Button>
-          </>
+        {mobile && (
+          <Button
+            variant={"outline"}
+            color={colors.accPrimary}
+            size="xs"
+            w={"50%"}
+            ff="Poppins"
+            fw={600}
+            fz={15}
+          >
+            CONTACT ME
+          </Button>
+        )}
+        {isAuthenticated ? (
+          <Button
+            color={colors.accPrimary}
+            size="xs"
+            fz={15}
+            w={"50%"}
+            mt="auto" // Pushes the button nicely down if needed
+            mb="md"
+            loading={logOut.isPending}
+            onClick={handleLogout}
+          >
+            Sign Out
+          </Button>
         ) : (
           <Button
             color={colors.accPrimary}

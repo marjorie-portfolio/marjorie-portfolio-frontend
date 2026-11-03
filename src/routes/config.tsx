@@ -25,19 +25,12 @@ export const routes = [
           },
         ],
       },
+      
       {
         element: <ProtectedRoute />,
-        children: [
-          {
-            path: "/dashboard",
-            element: <DashBoard />,
-          },
-          {
-            path: "/section/:id",
-            element: <Section />,
-          },
-        ],
+        children: [{ path: "/dashboard", element: <DashBoard /> }],
       },
+      { path: "/section/:id", element: <Section /> },
     ],
   },
 ];
