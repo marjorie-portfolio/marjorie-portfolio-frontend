@@ -12,7 +12,7 @@ type HeaderProps = {
   onClick: () => void;
 };
 
-export default function Header({ opened, onClick }: HeaderProps) {
+export default function Header({ onClick }: HeaderProps) {
 
   const mobile = useMediaQuery("(max-width: 768px)");
 

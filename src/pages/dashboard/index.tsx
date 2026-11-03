@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   Flex,
   Paper,
@@ -56,7 +55,7 @@ export default function DashBoard() {
   const { data: visits, isLoading: isLoadingVisits } = useVisits();
 
   const visitors = !user?.dashBoard.visitors
-    ? Number(visits)
+    ? Number(visits?.data)
     : Number(user?.dashBoard.visitors);
 
   const { nameModal } = CreateSectionModals();

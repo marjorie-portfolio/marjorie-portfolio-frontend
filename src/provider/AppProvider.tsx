@@ -1,4 +1,3 @@
-import {AuthProvider} from "../context/AuthContext";
 import {ThemeProvider} from "../context/ThemeContext";
 
 export default function AppProvider({
@@ -8,9 +7,7 @@ export default function AppProvider({
 }) {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        {children}
-        </AuthProvider>
+      {children}
     </ThemeProvider>
   );
 }

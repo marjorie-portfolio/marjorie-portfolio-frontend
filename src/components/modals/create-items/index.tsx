@@ -1,4 +1,4 @@
-import { Button, Text, Box, Stack, TextInput } from '@mantine/core';
+import { Text, Box } from '@mantine/core';
 import { modals } from '@mantine/modals';
 
 import ItemTypeSelection from '../create-items/ItemTypeSelection';

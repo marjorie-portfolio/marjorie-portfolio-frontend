@@ -7,10 +7,9 @@ export const sectionsKey = {
 };
 
 export const sectionQueries = {
-  all: (id: number) =>
+  all: (id?: number) =>
     queryOptions({
-      queryKey: sectionsKey.byId(id),
+      queryKey: id === undefined ? sectionsKey.all : sectionsKey.byId(id),
       queryFn: () => fetchSections(id),
-    
     }),
 };

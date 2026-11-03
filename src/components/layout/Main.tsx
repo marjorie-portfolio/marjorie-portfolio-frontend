@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { AppShell, Overlay } from "@mantine/core";
+import { AppShell } from "@mantine/core";
 
 import { useTheme } from "../../context/ThemeContext";
 import { createPlus4Pattern } from "../../utils/pattern/plus4Pattern";

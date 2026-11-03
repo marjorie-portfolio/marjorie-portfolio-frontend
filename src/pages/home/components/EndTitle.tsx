@@ -1,4 +1,4 @@
-import { Text, Flex, Button, Box } from "@mantine/core";
+import { Text, Flex, Button } from "@mantine/core";
 import { useTheme } from "../../../context/ThemeContext";
 
 type EndTitleProps = {

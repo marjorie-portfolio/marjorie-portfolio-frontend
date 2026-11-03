@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -18,12 +18,12 @@ import useAuthState from "../../../store/useAuthStore";
 
 import type { FetchUserRequest } from "../../../types/auth.types";
 
-interface SignInDialogProps{
-  mobile: boolean
+interface SignInDialogProps {
+  mobile: boolean;
 }
 
-export default function SignInDialog({mobile}: SignInDialogProps) {
-  const navigate = useNavigate()
+export default function SignInDialog({ mobile }: SignInDialogProps) {
+  const navigate = useNavigate();
   const { login } = useAuthState();
 
   const { colors } = useTheme();
@@ -41,7 +41,7 @@ export default function SignInDialog({mobile}: SignInDialogProps) {
     loginMutation.mutate(loginForm, {
       onSuccess: (data) => {
         login(data.user);
-        navigate("/dashboard")
+        navigate("/dashboard");
       },
 
       onError: (error) => {
@@ -65,7 +65,7 @@ export default function SignInDialog({mobile}: SignInDialogProps) {
         style={{
           border: `3px solid ${colors.accPrimary}`,
         }}
-        w={mobile? "90%" : "35%"}
+        w={mobile ? "90%" : "35%"}
         bg={colors.bgHighlight}
         c={colors.accPrimary}
       >

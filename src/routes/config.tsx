@@ -1,4 +1,4 @@
-import ProtectedRoute from "./protectedRoute";
+import ProtectedRoute, { PublicOnlyRoute } from "./protectedRoute";
 
 import MainLayout from "../components/layout/MainLayout";
 import Home from "../pages/home";
@@ -17,8 +17,13 @@ export const routes = [
         element: <Home />,
       },
       {
-        path: "/sign-in",
-        element: <SignIn />,
+        element: <PublicOnlyRoute />,
+        children: [
+          {
+            path: "/sign-in",
+            element: <SignIn />,
+          },
+        ],
       },
       {
         element: <ProtectedRoute />,
@@ -28,7 +33,7 @@ export const routes = [
             element: <DashBoard />,
           },
           {
-            path: "/section/:slug/:id",
+            path: "/section/:id",
             element: <Section />,
           },
         ],

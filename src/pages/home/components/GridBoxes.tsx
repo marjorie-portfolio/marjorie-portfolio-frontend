@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { Grid, Paper, Container, Text, Box, Divider } from "@mantine/core";
+import { Grid, Paper, Container, Text, Box } from "@mantine/core";
 import { useTheme } from "../../../context/ThemeContext";
 import "./styles/GridImage.Module.css";
 
@@ -25,7 +25,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
 
   return (
     <Container size="xl" py="xl" w="100%">
-      <Grid gutter="md">
+      <Grid gap="md">
         {rawItems.map((item: any, index: number) => {
           const isFlipped = !!flippedCards[index];
 

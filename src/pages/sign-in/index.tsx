@@ -1,4 +1,4 @@
-import { Flex, Group } from "@mantine/core";
+import { Flex } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import PageHeader from "../../components/common/PageHeader";

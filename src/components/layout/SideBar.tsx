@@ -6,7 +6,7 @@ import {
 } from "@tabler/icons-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useTheme } from "../../context/ThemeContext";
 import { useLogout } from "../../query/auth";
@@ -39,18 +39,25 @@ export default function SideBar({ onNavigate }: SideBarProps) {
   const { data: sections } = useQuery(sectionQueries.all());
 
   const logOut = useLogout();
+  const queryClient = useQueryClient();
   const { isAuthenticated, logout } = useAuthState();
 
   const handleLogout = () =>
     logOut.mutate(undefined, {
       onSuccess: () => {
         logout();
+        queryClient.removeQueries({ queryKey: ["current-user"] });
+        queryClient.removeQueries({ queryKey: ["sections"] });
+        queryClient.removeQueries({ queryKey: ["cards"] });
+        queryClient.removeQueries({ queryKey: ["acitvity-logs"] });
+        queryClient.removeQueries({ queryKey: ["visits"] });
+        navigate("/sign-in", { replace: true });
       },
     });
 
   return (
     <AppShell.Navbar>
-      <Flex h={"100vh"} direction={"column"} align={"center"} w={"100%"}>
+      <Flex h={"100vh"} direction={"column"} p={10} align={"center"} w={"100%"}>
         <NavLink
           active={isActive("/")}
           styles={linkStyles(isActive("/"))}
@@ -94,8 +101,8 @@ export default function SideBar({ onNavigate }: SideBarProps) {
               color={colors.accPrimary}
             />
 
-            {sections?.data?.map((section, i) => {
-              const path = `/section-${section.slug}`;
+            {sections?.data?.map((section) => {
+              const path = `/section/${section.id}`;
               return (
                 <NavLink
                   key={section.id ?? section.title}

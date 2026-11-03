@@ -3,16 +3,29 @@ import { useCurrentUser } from "../query/auth";
 import useAuthState from "../store/useAuthStore";
 
 export function useRestoreSession() {
-  const { data, isSuccess, isError } = useCurrentUser();
-  const { setUser } = useAuthState();
+  const { data, isPending, isSuccess, isError } = useCurrentUser();
+  const { setUser, setSessionRestored } = useAuthState();
 
   useEffect(() => {
+    if (isPending) {
+      return;
+    }
+
     if (isSuccess) {
-      setUser(data.user);
+      setUser(data.user ?? null);
     }
 
     if (isError) {
       setUser(null);
     }
-  }, [data, isSuccess, isError, setUser]);
+
+    setSessionRestored();
+  }, [
+    data,
+    isPending,
+    isSuccess,
+    isError,
+    setUser,
+    setSessionRestored,
+  ]);
 }

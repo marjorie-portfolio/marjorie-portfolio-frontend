@@ -1,4 +1,5 @@
-import { Text, ActionIcon, Box } from "@mantine/core";
+import { Text, ActionIcon, Box, Group } from "@mantine/core";
+import type { ReactNode } from "react";
 import { IconArrowBigLeftFilled } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
@@ -8,11 +9,13 @@ import { useTheme } from "../../context/ThemeContext";
 type PageHeaderProps = {
   title: string;
   hideBackButton?: boolean;
+  action?: ReactNode;
 };
 
 export default function PageHeader({
   title,
   hideBackButton = false,
+  action,
 }: PageHeaderProps) {
   const { colors } = useTheme();
   const navigate = useNavigate();
@@ -37,9 +40,12 @@ export default function PageHeader({
         </ActionIcon>
       )}
 
-      <Text ta="center" ff="Climate Crisis" c={colors.accPrimary} fz={mobile? 20 :45}>
-        {title}
-      </Text>
+      <Group justify="center" h="100%" px="md">
+        <Text ta="center" ff="Climate Crisis" c={colors.accPrimary} fz={mobile? 20 :45}>
+          {title}
+        </Text>
+        {action}
+      </Group>
     </Box>
   );
 }

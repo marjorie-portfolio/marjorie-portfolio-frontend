@@ -5,9 +5,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import AppProvider from "./provider/AppProvider.tsx";
 import App from "./App.tsx";
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")!).render(
             }}
           >
             <ModalsProvider>
+              <Notifications />
               <App />
             </ModalsProvider>
           </MantineProvider>
