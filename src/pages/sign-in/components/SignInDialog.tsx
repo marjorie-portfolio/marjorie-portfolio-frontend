@@ -87,10 +87,10 @@ export default function SignInDialog({ mobile }: SignInDialogProps) {
           }}
         >
           <Text fw={600} fz={18} ta={"center"}>
-            WELCOME BACK, MARJORIE!
+            WELCOME!
           </Text>
-          <Text mt={-10} ta={"center"}>
-            Sign in to continue building your professional story.
+          <Text mt={-10} ta={"center"} fw={500}>
+            Click GUEST button to explore more about my project.
           </Text>
         </Box>
         <Box px={20} py={20}>
@@ -136,6 +136,7 @@ export default function SignInDialog({ mobile }: SignInDialogProps) {
                   color: colors.text,
                   border: `2px solid ${colors.accPrimary}`,
                   backgroundColor: colors.bgHighlight,
+                  borderRadius: 20
                 },
                 visibilityToggle: {
                   color: colors.accPrimary,
@@ -152,7 +153,7 @@ export default function SignInDialog({ mobile }: SignInDialogProps) {
               >
                 SIGN-IN
               </Button>
-              <Button variant="light" color={colors.accPrimary} onClick={() => loginMutation.mutate(GUEST_CREDENTIALS, { onSuccess: () => void finishLogin() })} loading={loginMutation.isPending}>
+              <Button  color={colors.accPrimary} onClick={() => loginMutation.mutate(GUEST_CREDENTIALS, { onSuccess: () => void finishLogin() })} loading={loginMutation.isPending}>
                 GUEST
               </Button>
             </Flex>

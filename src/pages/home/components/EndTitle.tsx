@@ -4,10 +4,17 @@ import { useTheme } from "../../../context/ThemeContext";
 type EndTitleProps = {
   onClick: () => void;
   isAuthenticated: boolean;
+  role: string | null
 };
 
-export default function EndTitle({ onClick, isAuthenticated }: EndTitleProps) {
+export default function EndTitle({ onClick, isAuthenticated, role}: EndTitleProps) {
   const { colors } = useTheme();
+
+  const getGreeting = () => {
+    if (!isAuthenticated) return "WELCOME TO MY PORTFOLIO!";
+    return role === "owner" ? "WELCOME BACK MARJORIE!!!" : "WELCOME, GUEST!";
+  };
+
   return (
     <Flex justify={"center"}>
       <Flex
@@ -19,7 +26,7 @@ export default function EndTitle({ onClick, isAuthenticated }: EndTitleProps) {
         bdrs={20}
       >
         <Text ff={"Share Tech Mono"} fz={20} c={colors.text}>
-          WELCOME BACK MARJORIE!!!
+          {getGreeting()}
         </Text>
         <Button
           variant="outline"

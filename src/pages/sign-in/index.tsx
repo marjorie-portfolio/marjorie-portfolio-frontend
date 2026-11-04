@@ -1,4 +1,4 @@
-import { Flex } from "@mantine/core";
+import { Flex, Container } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import PageHeader from "../../components/common/PageHeader";
@@ -11,7 +11,9 @@ export default function SignIn() {
   return (
     <>
       <Flex align={"center"} direction={"column"} mih="90vh">
-        <PageHeader title={"SIGN - IN"} />
+        <Container w={"100%"}>
+          <PageHeader title={"SIGN - IN"} />
+        </Container>
         <Flex
           direction={"column"}
           justify={"center"}
@@ -20,8 +22,8 @@ export default function SignIn() {
           flex={1}
           gap={20}
         >
-          <SubTitle mobile={mobile}/>
-          <SignInDialog mobile={mobile}/>
+          <SubTitle mobile={mobile} />
+          <SignInDialog mobile={mobile} />
         </Flex>
       </Flex>
     </>

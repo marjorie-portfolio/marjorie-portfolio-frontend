@@ -20,6 +20,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useLogout } from "../../query/auth";
 import useAuthState from "../../store/useAuthStore";
 import { sectionQueries } from "../../query/sections.query";
+import { openContactModal } from "../modals/ContactModal";
 
 type SideBarProps = {
   onNavigate?: () => void;
@@ -130,24 +131,6 @@ export default function SideBar({ onNavigate }: SideBarProps) {
             </>
           );
         })}
-
-        {isAuthenticated && (
-          <>
-            <Divider
-              w={"100%"}
-              my="sm"
-              label={
-                <Text size="xs" fw={700} c={colors.accPrimary}>
-                  CARDS
-                </Text>
-              }
-              labelPosition="center"
-              size="sm"
-              color={colors.accPrimary}
-            />
-          </>
-        )}
-
         {mobile && (
           <Button
             variant={"outline"}
@@ -157,8 +140,9 @@ export default function SideBar({ onNavigate }: SideBarProps) {
             ff="Poppins"
             fw={600}
             fz={15}
+            onClick={() => openContactModal(colors.accPrimary)}
           >
-            CONTACT MARJORIE
+            CONTACT MARJORIE!
           </Button>
         )}
         {isAuthenticated ? (

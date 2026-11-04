@@ -17,7 +17,7 @@ import EndTitle from "./components/EndTitle";
 export default function Home() {
   const navigate = useNavigate();
   const { colors } = useTheme();
-  const { isAuthenticated } = useAuthState();
+  const { isAuthenticated, user} = useAuthState();
   const mobile = useMediaQuery("(max-width: 768px)");
 
   const { data: sections } = useQuery(sectionQueries.all());
@@ -40,7 +40,7 @@ export default function Home() {
       </Flex>
 
       <Flex direction="column">
-        <GridTitle />
+        <GridTitle/>
         {sections?.data.map((item: any) =>
           item.cards.length === 0 ? null : (
             <div key={item.id}>
@@ -72,6 +72,7 @@ export default function Home() {
             isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")
           }
           isAuthenticated={isAuthenticated}
+          role={user?.role}
         />
       </Flex>
     </Flex>

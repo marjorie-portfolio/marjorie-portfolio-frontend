@@ -3,6 +3,7 @@ import { IconSun, IconMoon } from "@tabler/icons-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useMediaQuery } from "@mantine/hooks";
 import useAuthState from "../../store/useAuthStore";
+import { openContactModal } from "../modals/ContactModal";
 
 import MK_light from "../../assets/icons/MK_dark.png";
 import MK_dark from "../../assets/icons/MK_light.png";
@@ -45,9 +46,10 @@ export default function Header({ onClick }: HeaderProps) {
               ff="Poppins"
               fw={500}
               fz={mobile ? 15 : 18}
-              c={colors.bgBase} 
+              c={colors.accPrimary} 
+              onClick={() => openContactModal(colors.accPrimary)}
             >
-              CONTACT MARJORIE
+              CONTACT MARJORIE!
             </Button>
           )}
             <ActionIcon
@@ -60,7 +62,7 @@ export default function Header({ onClick }: HeaderProps) {
               {mode === "dark" ? (
                 <IconSun size={mobile? 100 :28} stroke={2} />
               ) : (
-                <IconMoon size={mobile? 100 :28} stroke={3} />
+                <IconMoon size={mobile? 100 :20} stroke={3} />
               )}
             </ActionIcon>
         </Flex>

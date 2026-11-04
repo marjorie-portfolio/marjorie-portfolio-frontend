@@ -25,10 +25,10 @@ export default function SubTitle({ mobile }: SubTitleProps) {
           ta={"center"}
           fz={mobile ? 18 : 23}
         >
-          Your journey evolves—
+          My journey evolves—
         </Text>
         <Text c={colors.text} fw={500} fz={mobile ? 15 : 20}>
-          update your portfolio anytime.
+          see what’s building next.
         </Text>
       </Flex>
     </>
