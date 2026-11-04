@@ -12,7 +12,11 @@ import {
   TextInput,
   Button,
 } from "@mantine/core";
-import { IconPencil, IconTrash, IconPlus } from "@tabler/icons-react";
+import {
+  IconPlus,
+  IconPencilFilled,
+  IconTrashFilled,
+} from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -44,7 +48,11 @@ import { sectionMutations } from "../../mutations/sections.mutation";
 import { deleteSection } from "../../api/sections.api";
 import { sectionsKey } from "../../query/sections.query";
 import ExpiryTimer from "../../components/ExpiryTimer";
-import { getExpiresAt, isTemporary } from "../../utils/content";
+import {
+  getExpiresAt,
+  getRememberedSectionExpiry,
+  isTemporary,
+} from "../../utils/content";
 
 const ACTION_META: Record<ActivityAction, { label: string; color: string }> = {
   CREATED: { label: "Added / Created", color: "#7fa88a" },
@@ -60,27 +68,54 @@ function EditSectionForm({ section }: { section: Section }) {
     ...sectionMutations.edit(section.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: sectionsKey.all });
-      await queryClient.invalidateQueries({ queryKey: sectionsKey.byId(section.id) });
-      notifications.show({ title: "Section renamed", message: "The section name was updated.", color: "primary" });
+      await queryClient.invalidateQueries({
+        queryKey: sectionsKey.byId(section.id),
+      });
+      notifications.show({
+        title: "Section renamed",
+        message: "The section name was updated.",
+        color: "primary",
+      });
       modals.closeAll();
     },
     onError: (cause) => {
-      const message = cause instanceof Error && cause.message.includes("already exists")
-        ? "A section with this name already exists."
-        : "Unable to rename this section.";
+      const message =
+        cause instanceof Error && cause.message.includes("already exists")
+          ? "A section with this name already exists."
+          : "Unable to rename this section.";
       setError(message);
-      notifications.show({ title: "Unable to rename section", message, color: "primary" });
+      notifications.show({
+        title: "Unable to rename section",
+        message,
+        color: "primary",
+      });
     },
   });
   return (
     <Stack gap="xl" mt="md">
-      <TextInput label="SECTION NAME" value={name} onChange={(event) => { setName(event.currentTarget.value); setError(null); }} error={error} />
-      <Button fullWidth loading={mutation.isPending} disabled={name.trim() === section.title} onClick={() => {
-        const value = name.trim();
-        if (!value) return setError("Section name is required.");
-        if (value.length > 50) return setError("Section name must be 50 characters or fewer.");
-        mutation.mutate(value);
-      }}>SAVE</Button>
+      <TextInput
+        label="SECTION NAME"
+        value={name}
+        onChange={(event) => {
+          setName(event.currentTarget.value);
+          setError(null);
+        }}
+        error={error}
+      />
+      <Button
+        fullWidth
+        loading={mutation.isPending}
+        disabled={name.trim() === section.title}
+        onClick={() => {
+          const value = name.trim();
+          if (!value) return setError("Section name is required.");
+          if (value.length > 50)
+            return setError("Section name must be 50 characters or fewer.");
+          mutation.mutate(value);
+        }}
+      >
+        SAVE
+      </Button>
     </Stack>
   );
 }
@@ -91,7 +126,10 @@ export default function DashBoard() {
   const queryClient = useQueryClient();
   const modalStyles = {
     content: { backgroundColor: colors.bgSurface },
-    header: { backgroundColor: colors.bgSurface, borderBottom: `1px solid ${colors.bgHighlight}` },
+    header: {
+      backgroundColor: colors.bgSurface,
+      borderBottom: `1px solid ${colors.bgHighlight}`,
+    },
     body: { backgroundColor: colors.bgSurface },
     title: { color: colors.text },
     close: { color: colors.text },
@@ -121,23 +159,46 @@ export default function DashBoard() {
     mutationFn: (sectionId: number) => deleteSection(sectionId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: sectionsKey.all });
-      notifications.show({ title: "Section deleted", message: "The section and its content were deleted.", color: "primary" });
+      notifications.show({
+        title: "Section deleted",
+        message: "The section and its content were deleted.",
+        color: "primary",
+      });
     },
-    onError: () => notifications.show({ title: "Unable to delete section", message: "Please try again.", color: "primary" }),
+    onError: () =>
+      notifications.show({
+        title: "Unable to delete section",
+        message: "Please try again.",
+        color: "primary",
+      }),
   });
   const canChange = (section: Section) => {
     if (user?.role === "owner") return true;
-    if (user?.role === "guest" && isTemporary(section)) return true;
-    notifications.show({ title: "Unable to change section", message: "Guests can only change temporary content they added.", color: "primary" });
+    if (
+      (user?.role === "guest" && isTemporary(section)) ||
+      Boolean(getRememberedSectionExpiry(section.id))
+    ) {
+      return true;
+    }
+    notifications.show({
+      title: "Unable to change section",
+      message: "Guests can only change temporary content they added.",
+      color: "primary",
+    });
     return false;
   };
   const openDelete = (section: Section) => {
     if (!canChange(section)) return;
     modals.openConfirmModal({
       title: "Delete section",
-      children: <Text>Delete "{section.title}"? All of its items and cards will also be deleted. This cannot be undone.</Text>,
+      children: (
+        <Text>
+          Delete "{section.title}"? All of its items and cards will also be
+          deleted. This cannot be undone.
+        </Text>
+      ),
       labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "primary", leftSection: <IconTrash size={16} /> },
+      confirmProps: { color: "primary", leftSection: <IconTrashFilled size={16} /> },
       centered: true,
       styles: modalStyles,
       onConfirm: () => deleteMutation.mutate(section.id),
@@ -146,7 +207,11 @@ export default function DashBoard() {
   const openEdit = (section: Section) => {
     if (!canChange(section)) return;
     modals.open({
-      title: <Text fw={900} tt="uppercase">EDIT SECTION</Text>,
+      title: (
+        <Text fw={900} tt="uppercase">
+          EDIT SECTION
+        </Text>
+      ),
       children: <EditSectionForm section={section} />,
       centered: true,
       styles: modalStyles,
@@ -159,7 +224,12 @@ export default function DashBoard() {
     }
     modals.openConfirmModal({
       title: "Guest content",
-      children: <Text>Anything you add as a guest is public and will be deleted automatically after 5 minutes.</Text>,
+      children: (
+        <Text>
+          Anything you add as a guest is public and will be deleted
+          automatically after 5 minutes.
+        </Text>
+      ),
       labels: { confirm: "Continue", cancel: "Cancel" },
       centered: true,
       styles: modalStyles,
@@ -175,7 +245,7 @@ export default function DashBoard() {
   return (
     <Box>
       <Flex align="center" justify="center" direction="column" p={0}>
-        <PageHeader title="DASHBOARD" />
+        <PageHeader title="DASHBOARD" hideBackButton/>
 
         <Grid w="100%" p={mobile ? 16 : 50} h={mobile ? "100%" : "80"}>
           {/* LEFT: Recent Activity */}
@@ -256,15 +326,15 @@ export default function DashBoard() {
           {/* RIGHT: Features + actions */}
           <Grid.Col span={{ base: 12, md: 5 }}>
             <Flex direction="column" gap="lg" h={mobile ? "auto" : "70vh"}>
-              <Panel title="Sections" flex={1} mih={260} action={
-                <ActionIcon aria-label="Add section" variant="subtle" onClick={openAdd}><IconPlus size={18} /></ActionIcon>
-              }>
+              <Panel title="Sections" flex={1} mih={260}>
                 {isLoadingSections ? (
                   <Text c={colors.textDimmed} fz={12} p="md">
                     Loading...
                   </Text>
                 ) : sectionList.length === 0 ? (
-                  <Text c={colors.textDimmed} fz={12} p="md">No sections yet. Tap + to add one.</Text>
+                  <Text c={colors.textDimmed} fz={12} p="md">
+                    No sections yet. Tap + to add one.
+                  </Text>
                 ) : (
                   sectionList.map((section: Section) => (
                     <Group
@@ -285,15 +355,46 @@ export default function DashBoard() {
                         }}
                       />
                       <Tooltip label={section.title}>
-                        <Text c={colors.text} fz={14} fw={600} truncate style={{ flex: 1 }}>
-                          {section.title} {isTemporary(section) && <ExpiryTimer expiresAt={getExpiresAt(section)} />}
-                        </Text>
+                        <Group gap={6} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                          <Text
+                            c={colors.text}
+                            fz={14}
+                            fw={600}
+                            truncate
+                            style={{ minWidth: 0 }}
+                          >
+                            {section.title}
+                          </Text>
+                          {(getExpiresAt(section) ??
+                            getRememberedSectionExpiry(section.id)) && (
+                            <ExpiryTimer
+                              expiresAt={
+                                getExpiresAt(section) ??
+                                getRememberedSectionExpiry(section.id)
+                              }
+                            />
+                          )}
+                        </Group>
                       </Tooltip>
-                      <ActionIcon aria-label={`Edit section ${section.title}`} variant="subtle" onClick={(event) => { event.stopPropagation(); openEdit(section); }}>
-                        <IconPencil size={17} />
+                      <ActionIcon
+                        aria-label={`Edit section ${section.title}`}
+                        variant="subtle"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          openEdit(section);
+                        }}
+                      >
+                        <IconPencilFilled size={17} color={colors.text} />
                       </ActionIcon>
-                      <ActionIcon aria-label={`Delete section ${section.title}`} variant="subtle" onClick={(event) => { event.stopPropagation(); openDelete(section); }}>
-                        <IconTrash size={17} />
+                      <ActionIcon
+                        aria-label={`Delete section ${section.title}`}
+                        variant="subtle"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          openDelete(section);
+                        }}
+                      >
+                        <IconTrashFilled size={17} color={colors.text} />
                       </ActionIcon>
                     </Group>
                   ))

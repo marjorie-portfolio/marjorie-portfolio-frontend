@@ -3,6 +3,7 @@ import { registerCards, updateCard, deleteCard } from "../api/cards.api";
 import type {
   RegisterCardsRequest,
   DeleteCardsRequest,
+  UpdateCardRequest,
 } from "../types/cards.types";
 
 export const cardMutations = {
@@ -14,7 +15,7 @@ export const cardMutations = {
 
   update: (cardId: number) =>
     mutationOptions({
-      mutationFn: () => updateCard({ cardId }),
+      mutationFn: (reqBody: UpdateCardRequest) => updateCard({ cardId }, reqBody),
     }),
 
   delete: () =>

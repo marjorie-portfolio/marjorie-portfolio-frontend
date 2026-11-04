@@ -55,7 +55,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
                     bg={colors.text}
                   >
                     <Box className="backContent">
-                      <Text size="sm" c="gray.7" className="descriptionText">
+                      <Text size="sm" c={colors.accPrimary} fw={600} className="descriptionText">
                         {item?.description || "No description provided."}
                       </Text>
                     </Box>

@@ -25,7 +25,7 @@ export default function PageHeader({
     const mobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <Box w={"90%"} h={mobile? 35 : 70} pos="relative" bg={colors.bgBase} my={20}>
+    <Box  h={mobile? 35 : 70} pos="relative" bg={colors.bgBase} my={20}>
       {(
         !hideBackButton &&
         <ActionIcon

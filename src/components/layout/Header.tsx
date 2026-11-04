@@ -47,7 +47,7 @@ export default function Header({ onClick }: HeaderProps) {
               fz={mobile ? 15 : 18}
               c={colors.bgBase} 
             >
-              CONTACT ME
+              CONTACT MARJORIE
             </Button>
           )}
             <ActionIcon

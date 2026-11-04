@@ -1,4 +1,12 @@
-import { AppShell, Button, Flex, Divider, Text, NavLink } from "@mantine/core";
+import {
+  AppShell,
+  Button,
+  Flex,
+  Divider,
+  Text,
+  NavLink,
+  Loader,
+} from "@mantine/core";
 import {
   IconHomeFilled,
   IconLayoutDashboardFilled,
@@ -36,7 +44,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
     },
   });
   const mobile = useMediaQuery("(max-width: 768px)");
-  const { data: sections } = useQuery(sectionQueries.all());
+  const { data: sections, isLoading } = useQuery(sectionQueries.all());
 
   const logOut = useLogout();
   const queryClient = useQueryClient();
@@ -84,38 +92,61 @@ export default function SideBar({ onNavigate }: SideBarProps) {
           onClick={() => goTo("/dashboard")}
         />
 
-        <Divider
-          w={"100%"}
-          my="sm"
-          label={
-            <Text size="xs" fw={700} c={colors.accPrimary}>
-              SECTIONS
-            </Text>
-          }
-          labelPosition="center"
-          size="sm"
-          color={colors.accPrimary}
-        />
+        {isLoading ? (
+          <Loader type="dots" color={colors.accPrimary} />
+        ) : (
+          <Divider
+            w={"100%"}
+            my="sm"
+            label={
+              <Text size="xs" fw={700} c={colors.accPrimary}>
+                SECTIONS
+              </Text>
+            }
+            labelPosition="center"
+            size="sm"
+            color={colors.accPrimary}
+          />
+        )}
 
         {sections?.data?.map((section) => {
           const path = `/section/${section.id}`;
           return (
-            <NavLink
-              key={section.id ?? section.title}
-              active={isActive(path)}
-              styles={linkStyles(isActive(path))}
-              label={
-                <Text size="md" fw={600} c={colors.accPrimary}>
-                  {section.title}
-                </Text>
-              }
-              leftSection={
-                <IconCloverFilled size={20} color={colors.accPrimary} />
-              }
-              onClick={() => goTo(path)}
-            />
+            <>
+              <NavLink
+                key={section.id ?? section.title}
+                active={isActive(path)}
+                styles={linkStyles(isActive(path))}
+                label={
+                  <Text size="md" fw={600} c={colors.accPrimary}>
+                    {section.title}
+                  </Text>
+                }
+                leftSection={
+                  <IconCloverFilled size={20} color={colors.accPrimary} />
+                }
+                onClick={() => goTo(path)}
+              />
+            </>
           );
         })}
+
+        {isAuthenticated && (
+          <>
+            <Divider
+              w={"100%"}
+              my="sm"
+              label={
+                <Text size="xs" fw={700} c={colors.accPrimary}>
+                  CARDS
+                </Text>
+              }
+              labelPosition="center"
+              size="sm"
+              color={colors.accPrimary}
+            />
+          </>
+        )}
 
         {mobile && (
           <Button
@@ -127,7 +158,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
             fw={600}
             fz={15}
           >
-            CONTACT ME
+            CONTACT MARJORIE
           </Button>
         )}
         {isAuthenticated ? (
@@ -136,7 +167,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
             size="xs"
             fz={15}
             w={"50%"}
-            mt="auto" // Pushes the button nicely down if needed
+            mt="20"
             mb="md"
             loading={logOut.isPending}
             onClick={handleLogout}

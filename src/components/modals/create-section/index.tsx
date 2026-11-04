@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sectionMutations } from "../../../mutations/sections.mutation";
 import { sectionsKey } from "../../../query/sections.query";
-import { useTheme } from "../../../context/ThemeContext";
+import { rememberSectionExpiry } from "../../../utils/content";
 
 function CreateSectionForm() {
   const navigate = useNavigate();
@@ -16,6 +16,10 @@ function CreateSectionForm() {
   const createMutation = useMutation({
     ...sectionMutations.create,
     onSuccess: (response) => {
+      rememberSectionExpiry(
+        response.data.section.id,
+        response.data.section.expires_at,
+      );
       void queryClient.invalidateQueries({ queryKey: sectionsKey.all });
       modals.closeAll();
       navigate(`/section/${response.data.section.id}`);
@@ -78,7 +82,6 @@ function CreateSectionForm() {
 }
 
 export default function CreateSectionModals() {
-  const { colors } = useTheme();
   const nameModal = () => {
     modals.open({
       title: (
@@ -94,13 +97,6 @@ export default function CreateSectionModals() {
       centered: true,
       radius: 'lg',
       padding: 'md',
-      styles: {
-        content: { backgroundColor: colors.bgSurface },
-        header: { backgroundColor: colors.bgSurface, borderBottom: `1px solid ${colors.bgHighlight}`, paddingBottom: "12px" },
-        body: { backgroundColor: colors.bgSurface },
-        title: { color: colors.text },
-        close: { color: colors.text },
-      },
       children: <CreateSectionForm />,
     });
   };

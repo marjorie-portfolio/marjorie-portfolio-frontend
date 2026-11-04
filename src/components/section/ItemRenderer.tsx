@@ -23,7 +23,12 @@ function getItemType(item: SectionItem): ItemType {
 
 function Description({ value }: { value: string | null }) {
   if (!value) return null;
-  return <Typography dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(value) }} />;
+  return (
+    <Typography
+      style={{ overflowWrap: "anywhere", wordBreak: "break-word", maxWidth: "100%" }}
+      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(value) }}
+    />
+  );
 }
 
 export default function ItemRenderer({ item, onEdit, onDelete }: ItemRendererProps) {
@@ -58,7 +63,7 @@ export default function ItemRenderer({ item, onEdit, onDelete }: ItemRendererPro
         <Group justify="space-between">{expiresAt && <ExpiryTimer expiresAt={expiresAt} />}{actions}</Group>
         <Box display="flex" style={{ gap: "var(--mantine-spacing-lg)", alignItems: "center", flexDirection: mobile ? "column" : "row" }}>
           <Box style={{ flex: "0 0 34%" }}><ImageFrame src={item.imageUrl} ratio={3 / 4} /></Box>
-          <Stack style={{ flex: 1 }}><Text fw={700}>{item.title}</Text><Description value={item.description} /></Stack>
+          <Stack style={{ flex: 1, minWidth: 0 }}><Text fw={700} style={{ overflowWrap: "anywhere" }}>{item.title}</Text><Description value={item.description} /></Stack>
         </Box>
       </Card>
     );

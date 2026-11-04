@@ -34,18 +34,12 @@ export default function RichTextField({ value, onChange }: RichTextFieldProps) {
           borderRadius: 12,
           overflow: "hidden",
         },
-        toolbar: {
-          backgroundColor: colors.bgSurface,
-          borderColor: colors.bgHighlight,
-        },
         content: {
           backgroundColor: colors.bgSurface,
           color: colors.text,
-          minHeight: 82,
           padding: "10px 12px",
           caretColor: colors.accPrimary,
           "& .ProseMirror": {
-            minHeight: 58,
             outline: "none",
             color: colors.text,
             caretColor: colors.accPrimary,
@@ -53,22 +47,7 @@ export default function RichTextField({ value, onChange }: RichTextFieldProps) {
         },
       }}
     >
-      <RichTextEditor.Toolbar>
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.Bold />
-          <RichTextEditor.Italic />
-          <RichTextEditor.Underline />
-        </RichTextEditor.ControlsGroup>
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.BulletList />
-          <RichTextEditor.OrderedList />
-        </RichTextEditor.ControlsGroup>
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.AlignLeft />
-          <RichTextEditor.AlignCenter />
-          <RichTextEditor.AlignRight />
-        </RichTextEditor.ControlsGroup>
-      </RichTextEditor.Toolbar>
+      
       <RichTextEditor.Content />
     </RichTextEditor>
   );

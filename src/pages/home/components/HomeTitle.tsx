@@ -8,12 +8,10 @@ export default function HomeTitle() {
   const mobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <Flex direction={"column"}>
+    <Flex direction={"column"} >
       <Flex
         direction="column"
         my={mobile ? 80 : 50}
-        align={mobile ? "center" : "flex-start"}
-        
         gap={mobile ? 0 : 40}
       >
         <Text
@@ -22,7 +20,7 @@ export default function HomeTitle() {
           style={{
             fontSize: "clamp(2.2rem, 5.5vw, 62px)",
           }}
-          ta={mobile ? "center" : "left"}
+          ta={"center"}
           bg={colors.bgBase}
           px={30}
         >
@@ -38,6 +36,7 @@ export default function HomeTitle() {
                 WebkitTextStroke: `3px ${colors.accPrimary}`,
                 fontSize: "clamp(1rem, 5.5vw, 60px)",
               }}
+              ta={"center"}
               bg={colors.bgBase}
               px={30}
             >
@@ -51,6 +50,7 @@ export default function HomeTitle() {
                 WebkitTextStroke: `1px ${colors.text}`,
                 fontSize: "clamp(1rem, 5.5vw, 58px)",
               }}
+              ta={"center"}
               px={30}
               bg={colors.bgBase}
             >
@@ -65,7 +65,7 @@ export default function HomeTitle() {
         <Text
           ff="Share Tech Mono"
           style={{
-            fontSize: "clamp(1rem, 2vw, 4rem)",
+            fontSize: "clamp(1rem, 2vw, 2rem)",
           }}
           c={colors.text}
           ta={mobile ? "center" : "right"}

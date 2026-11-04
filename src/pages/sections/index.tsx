@@ -7,24 +7,29 @@ import {
   Skeleton,
   Stack,
   Text,
+  Flex
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconBoxMultiple  } from "@tabler/icons-react";
 import PageHeader from "../../components/common/PageHeader";
 import ItemFormModal from "../../components/modals/ItemFormModal";
+import CardsModal from "../../components/modals/CardsModal";
 import ItemRenderer from "../../components/section/ItemRenderer";
 import { deleteItem } from "../../api/items.api";
 import { sectionQueries, sectionsKey } from "../../query/sections.query";
 import type { SectionItem } from "../../types/section.types";
 import useAuthState from "../../store/useAuthStore";
-import { isTemporary } from "../../utils/content";
 import { useTheme } from "../../context/ThemeContext";
 import ExpiryTimer from "../../components/ExpiryTimer";
-import { getExpiresAt } from "../../utils/content";
+import {
+  getExpiresAt,
+  getRememberedSectionExpiry,
+  isTemporary,
+} from "../../utils/content";
 
 export default function Section() {
   const { id } = useParams<{ id: string }>();
@@ -34,13 +39,19 @@ export default function Section() {
   const { isAuthenticated, user } = useAuthState();
   const { colors } = useTheme();
   const modalStyles = {
-    content: { backgroundColor: colors.bgSurface },
+    content: { 
+      scrollbarWidth: "none" as const, // Firefox
+      "-ms-overflow-style": "none", // IE and Edge
+      "&::-webkit-scrollbar": {
+        display: "none", // Chrome, Safari, Opera
+      },
+    },
     header: {
       backgroundColor: colors.bgSurface,
-      borderBottom: `1px solid ${colors.bgHighlight}`,
+      borderBottom: `2px solid ${colors.bgHighlight}`,
     },
-    body: { backgroundColor: colors.bgSurface },
-    title: { color: colors.text },
+    body: { backgroundColor: colors.bgSurface, padding: 10 },
+    title: { color: colors.text,    fontWeight: 800, },
     close: { color: colors.text },
   };
   const queryClient = useQueryClient();
@@ -105,7 +116,7 @@ export default function Section() {
       return;
     }
     modals.open({
-      title: item ? "Edit item" : "Add item",
+      title: item ? "Edit item" : "Add item khate",
       children: <ItemFormModal sectionId={sectionId} item={item} />,
       centered: true,
       styles: modalStyles,
@@ -131,7 +142,7 @@ export default function Section() {
     }
     modals.openConfirmModal({
       title: "Delete item",
-      children: <Text>Delete "{item.title}"?</Text>,
+      children: <Text> Are you sure you want to delete this item "{item.title}"?</Text>,
       labels: { confirm: "Delete", cancel: "Cancel" },
       confirmProps: { color: "primary" },
       centered: true,
@@ -141,6 +152,13 @@ export default function Section() {
   };
 
   const section = query.data?.data?.[0];
+  const sectionExpiresAt = section
+    ? getExpiresAt(section) ?? getRememberedSectionExpiry(section.id)
+    : null;
+  const canManageCards =
+    user?.role === "owner" ||
+    Boolean(sectionExpiresAt) ||
+    (user?.role === "guest" && (section ? isTemporary(section) : false));
   const items = [...(section?.items ?? [])].sort(
     (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id,
   );
@@ -160,21 +178,26 @@ export default function Section() {
     if (intent.type === "delete" && target) confirmDelete(target);
   }, [isAuthenticated, section, location.pathname]);
   return (
-    <Container size="xl">
+    <Container size="xl" w={"100%"}>
       <PageHeader
         uppercase={false}
         title={
           query.isPending ? (
             <Loader type="dots" color={colors.accPrimary} />
           ) : (
-            section?.title
+            <Flex align="center" gap="xs">
+              {section?.title}
+              {sectionExpiresAt && (
+                <ExpiryTimer expiresAt={sectionExpiresAt} />
+              )}
+            </Flex>
           )
         }
       />
       {query.isPending && (
         <Stack>
           {[1, 2, 3].map((key) => (
-            <Skeleton key={key} h={140} animate={true} />
+          <Skeleton key={key} h={300} animate={true}/>
           ))}
         </Stack>
       )}
@@ -188,7 +211,7 @@ export default function Section() {
         !query.isError &&
         section &&
         (items.length === 0 ? (
-          <Text ta="center">No items yet. Tap + to add one.</Text>
+          <Text ta="center" bg={colors.bgBase}>No items yet. Tap + to add one.</Text>
         ) : (
           <Stack>
             {items.map((item) => (
@@ -203,14 +226,45 @@ export default function Section() {
         ))}
       {section && (
         <Affix position={{ bottom: 24, right: 24 }}>
+          <Flex direction={"column"} gap={5}>
+          <ActionIcon
+            size="xl"
+            radius="xl"
+            aria-label="Manage cards"
+            onClick={() => {
+              if (sectionId === null) return;
+              if (!isAuthenticated) {
+                navigate("/sign-in", {
+                  state: { from: location.pathname, intent: { type: "add" } },
+                });
+                return;
+              }
+              if (!canManageCards) {
+                notifications.show({
+                  title: "Unable to change cards",
+                  message: "Guests can only change temporary content they added.",
+                  color: "primary",
+                });
+                return;
+              }
+              modals.open({
+                title: "Cards",
+                children: <CardsModal sectionId={sectionId} />,
+                centered: true,
+                styles: modalStyles,
+              });
+            }}
+          >
+            <IconBoxMultiple  color={"white"}/>
+          </ActionIcon>
           <ActionIcon
             size="xl"
             radius="xl"
             aria-label="Add item"
             onClick={() => openForm()}
           >
-            <IconPlus />
-          </ActionIcon>
+            <IconPlus color={"white"}/>
+          </ActionIcon></Flex>
         </Affix>
       )}
     </Container>

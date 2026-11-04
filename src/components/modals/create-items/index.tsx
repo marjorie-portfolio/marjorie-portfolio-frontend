@@ -23,7 +23,7 @@ export default function CreateItemsModals() {
       styles: {
         header: {
           borderBottom: '1px solid #e0e0e0',
-          paddingBottom: '12px',
+          paddingBottom: '5px',
         },
       },
       children: <ItemTypeSelection />,

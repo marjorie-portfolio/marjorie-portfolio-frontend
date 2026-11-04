@@ -11,5 +11,13 @@ export default function ExpiryTimer({ expiresAt }: { expiresAt: string | null })
   }, [remaining, queryClient]);
   if (remaining === null) return null;
   const seconds = Math.floor(remaining / 1000);
-  return <Badge variant="light">{`${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`}</Badge>;
+  return (
+    <Badge variant="light">
+      {remaining === 0
+        ? "00:00"
+        : `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(
+            seconds % 60,
+          ).padStart(2, "0")}`}
+    </Badge>
+  );
 }
