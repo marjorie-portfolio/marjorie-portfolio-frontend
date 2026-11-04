@@ -38,9 +38,7 @@ export default function Header({ onClick }: HeaderProps) {
         </UnstyledButton>
 
         <Flex align="center" gap="md">
-          {isAuthenticated ? (
-            <Text c={colors.bgBase}>Welcome Back Marj!</Text>
-          ) : mobile ? ("") : (
+          { mobile ? ("") : (
             <Button
               variant="transparent"
               ff="Poppins"
