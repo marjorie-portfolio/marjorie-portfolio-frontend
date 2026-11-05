@@ -11,16 +11,17 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { IconPlus, IconBoxMultiple  } from "@tabler/icons-react";
+import { useCallback, useEffect, useMemo } from "react";
+import { IconPlus, IconBoxMultiple } from "@tabler/icons-react";
 import PageHeader from "../../components/common/PageHeader";
+import { getModalStyles } from "../../helpers/modalStyles";
 import ItemFormModal from "../../components/modals/ItemFormModal";
+import DeleteItemModal from "../../components/modals/DeleteItemModal";
 import CardsModal from "../../components/modals/CardsModal";
 import ItemRenderer from "../../components/section/ItemRenderer";
-import { deleteItem } from "../../api/items.api";
-import { sectionQueries, sectionsKey } from "../../query/sections.query";
+import { sectionQueries } from "../../query/sections.query";
 import type { SectionItem } from "../../types/section.types";
 import useAuthState from "../../store/useAuthStore";
 import { useTheme } from "../../context/ThemeContext";
@@ -38,49 +39,29 @@ export default function Section() {
   const location = useLocation();
   const { isAuthenticated, user } = useAuthState();
   const { colors } = useTheme();
-  const modalStyles = {
-    content: { 
-      scrollbarWidth: "none" as const, // Firefox
-      "-ms-overflow-style": "none", // IE and Edge
-      "&::-webkit-scrollbar": {
-        display: "none", // Chrome, Safari, Opera
-      },
-    },
-    header: {
-      backgroundColor: colors.bgSurface,
-      borderBottom: `2px solid ${colors.bgHighlight}`,
-    },
-    body: { backgroundColor: colors.bgSurface, padding: 10 },
-    title: { color: colors.text,    fontWeight: 800, },
-    close: { color: colors.text },
-  };
-  const queryClient = useQueryClient();
+  const modalStyles = useMemo(
+    () => getModalStyles(colors, { hideScrollbar: true, bodyPadding: 10 }),
+    [colors],
+  );
   const query = useQuery({
     ...sectionQueries.all(sectionId ?? undefined),
     enabled: sectionId !== null,
     refetchInterval: 30_000,
   });
-  const deletion = useMutation({
-    mutationFn: (itemId: number) => deleteItem(sectionId ?? 0, itemId),
-    onSuccess: async () => {
+  const openItemModal = useCallback(
+    (item?: SectionItem) => {
       if (sectionId === null) return;
-      await queryClient.invalidateQueries({
-        queryKey: sectionsKey.byId(sectionId),
-      });
-      notifications.show({
-        title: "Item deleted",
-        message: "The item was deleted successfully.",
-        color: "primary",
+      modals.open({
+        title: item ? "EDIT ITEM" : "ADD ITEM",
+        size: 600,
+        children: <ItemFormModal sectionId={sectionId} item={item} />,
+        centered: true,
+        styles: modalStyles,
       });
     },
-    onError: () =>
-      notifications.show({
-        title: "Unable to delete item",
-        message: "Please try again.",
-        color: "primary",
-      }),
-  });
-  const openForm = (item?: SectionItem, skipWarning = false) => {
+    [modalStyles, sectionId],
+  );
+  const openForm = useCallback((item?: SectionItem, skipWarning = false) => {
     if (sectionId === null) return;
     if (!isAuthenticated) {
       navigate("/sign-in", {
@@ -111,18 +92,21 @@ export default function Section() {
         labels: { confirm: "Continue", cancel: "Cancel" },
         centered: true,
         styles: modalStyles,
-        onConfirm: () => openForm(undefined, true),
+        onConfirm: () => openItemModal(),
       });
       return;
     }
-    modals.open({
-      title: item ? "Edit item" : "Add item khate",
-      children: <ItemFormModal sectionId={sectionId} item={item} />,
-      centered: true,
-      styles: modalStyles,
-    });
-  };
-  const confirmDelete = (item: SectionItem) => {
+    openItemModal(item);
+  }, [
+    isAuthenticated,
+    location.pathname,
+    modalStyles,
+    navigate,
+    openItemModal,
+    sectionId,
+    user?.role,
+  ]);
+  const confirmDelete = useCallback((item: SectionItem) => {
     if (!isAuthenticated) {
       navigate("/sign-in", {
         state: {
@@ -140,28 +124,74 @@ export default function Section() {
       });
       return;
     }
-    modals.openConfirmModal({
+    modals.open({
       title: "Delete item",
-      children: <Text> Are you sure you want to delete this item "{item.title}"?</Text>,
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "primary" },
+      children: <DeleteItemModal sectionId={sectionId ?? 0} item={item} />,
       centered: true,
       styles: modalStyles,
-      onConfirm: () => deletion.mutate(item.id),
     });
-  };
+  }, [
+    isAuthenticated,
+    location.pathname,
+    modalStyles,
+    navigate,
+    sectionId,
+    user?.role,
+  ]);
 
   const section = query.data?.data?.[0];
-  const sectionExpiresAt = section
-    ? getExpiresAt(section) ?? getRememberedSectionExpiry(section.id)
-    : null;
-  const canManageCards =
-    user?.role === "owner" ||
-    Boolean(sectionExpiresAt) ||
-    (user?.role === "guest" && (section ? isTemporary(section) : false));
-  const items = [...(section?.items ?? [])].sort(
-    (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id,
+  const sectionExpiresAt = useMemo(
+    () =>
+      section
+        ? getExpiresAt(section) ?? getRememberedSectionExpiry(section.id)
+        : null,
+    [section],
   );
+  const canManageCards = useMemo(
+    () =>
+      user?.role === "owner" ||
+      Boolean(sectionExpiresAt) ||
+      (user?.role === "guest" && Boolean(section && isTemporary(section))),
+    [section, sectionExpiresAt, user?.role],
+  );
+  const items = useMemo(
+    () =>
+      [...(section?.items ?? [])].sort(
+        (a, b) =>
+          (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.id - b.id,
+      ),
+    [section?.items],
+  );
+  const openCards = useCallback(() => {
+    if (sectionId === null) return;
+    if (!isAuthenticated) {
+      navigate("/sign-in", {
+        state: { from: location.pathname, intent: { type: "add" } },
+      });
+      return;
+    }
+    if (!canManageCards) {
+      notifications.show({
+        title: "Unable to change cards",
+        message: "Guests can only change temporary content they added.",
+        color: "primary",
+      });
+      return;
+    }
+    modals.open({
+      title: "Cards",
+      children: <CardsModal sectionId={sectionId} />,
+      centered: true,
+      styles: modalStyles,
+    });
+  }, [
+    canManageCards,
+    isAuthenticated,
+    location.pathname,
+    modalStyles,
+    navigate,
+    sectionId,
+  ]);
   useEffect(() => {
     const state = location.state as {
       intent?: { type: "add" | "edit" | "delete"; itemId?: number };
@@ -176,9 +206,17 @@ export default function Section() {
     if (intent.type === "add") openForm();
     if (intent.type === "edit" && target) openForm(target);
     if (intent.type === "delete" && target) confirmDelete(target);
-  }, [isAuthenticated, section, location.pathname]);
+  }, [
+    isAuthenticated,
+    items,
+    location.pathname,
+    location.state,
+    openForm,
+    confirmDelete,
+    section,
+  ]);
   return (
-    <Container size="xl" w={"100%"}>
+    <Container size="xl" w={"100%"} >
       <PageHeader
         uppercase={false}
         title={
@@ -197,7 +235,7 @@ export default function Section() {
       {query.isPending && (
         <Stack>
           {[1, 2, 3].map((key) => (
-          <Skeleton key={key} h={300} animate={true}/>
+          <Skeleton key={key} h={300} animate={true} color={colors.bgBase}/>
           ))}
         </Stack>
       )}
@@ -213,7 +251,7 @@ export default function Section() {
         (items.length === 0 ? (
           <Text ta="center" bg={colors.bgBase}>No items yet. Tap + to add one.</Text>
         ) : (
-          <Stack>
+          <Stack >
             {items.map((item) => (
               <ItemRenderer
                 key={item.id}
@@ -225,35 +263,13 @@ export default function Section() {
           </Stack>
         ))}
       {section && (
-        <Affix position={{ bottom: 24, right: 24 }}>
+        <Affix position={{ bottom: 24, right: 24 }} >
           <Flex direction={"column"} gap={5}>
           <ActionIcon
             size="xl"
             radius="xl"
             aria-label="Manage cards"
-            onClick={() => {
-              if (sectionId === null) return;
-              if (!isAuthenticated) {
-                navigate("/sign-in", {
-                  state: { from: location.pathname, intent: { type: "add" } },
-                });
-                return;
-              }
-              if (!canManageCards) {
-                notifications.show({
-                  title: "Unable to change cards",
-                  message: "Guests can only change temporary content they added.",
-                  color: "primary",
-                });
-                return;
-              }
-              modals.open({
-                title: "Cards",
-                children: <CardsModal sectionId={sectionId} />,
-                centered: true,
-                styles: modalStyles,
-              });
-            }}
+            onClick={openCards}
           >
             <IconBoxMultiple  color={"white"}/>
           </ActionIcon>

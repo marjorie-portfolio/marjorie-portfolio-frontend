@@ -43,6 +43,7 @@
 
 .backContent {
   overflow-y: auto;
+  text-align: center;
 }
 
 .descriptionText {

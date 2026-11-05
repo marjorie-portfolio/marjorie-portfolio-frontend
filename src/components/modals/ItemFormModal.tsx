@@ -1,20 +1,13 @@
 import {
   Button,
-  Card,
   FileInput,
   Group,
-  SimpleGrid,
   Stack,
   Text,
   TextInput,
-  Box,
   Tooltip,
 } from "@mantine/core";
-import {
-  IconCheck,
-  IconAlertCircle,
-  IconAlertCircleFilled,
-} from "@tabler/icons-react";
+import { IconAlertCircleFilled } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +19,7 @@ import ImageFrame from "../section/ImageFrame";
 import RichTextField from "../section/RichTextField";
 import { isDescriptionEmpty } from "../../utils/content";
 import { useTheme } from "../../context/ThemeContext";
+import { ItemTypeStep } from "./ItemFormParts";
 
 type Props = { sectionId: number; item?: SectionItem };
 
@@ -34,6 +28,27 @@ const typeLabels: Record<ItemType, string> = {
   type_2: "Image with title",
   type_3: "Image with title and description",
 };
+
+function getItemValidationError(
+  type: ItemType,
+  title: string,
+  description: string,
+  hasImage: boolean,
+) {
+  const missing =
+    type === "type_3"
+      ? !title || !hasImage || isDescriptionEmpty(description)
+      : type === "type_2"
+        ? !hasImage || !title
+        : !title || isDescriptionEmpty(description);
+
+  if (!missing) return null;
+  return type === "type_3"
+    ? "Title, image and description are required."
+    : type === "type_2"
+      ? "Image and title are required."
+      : "Title and description are required.";
+}
 
 export default function ItemFormModal({ sectionId, item }: Props) {
   const queryClient = useQueryClient();
@@ -71,120 +86,24 @@ export default function ItemFormModal({ sectionId, item }: Props) {
 
   if (step === 0) {
     return (
-      <Stack role="radiogroup" aria-label="Choose item type">
-        <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-          {(Object.keys(typeLabels) as ItemType[]).map((candidate, index) => (
-            <Card
-              key={candidate}
-              withBorder
-              component="button"
-              type="button"
-              role="radio"
-              aria-checked={type === candidate}
-              tabIndex={type === candidate ? 0 : -1}
-              onKeyDown={(event) => {
-                if (
-                  event.key !== "ArrowRight" &&
-                  event.key !== "ArrowDown" &&
-                  event.key !== "ArrowLeft" &&
-                  event.key !== "ArrowUp"
-                )
-                  return;
-                event.preventDefault();
-                const next =
-                  event.key === "ArrowRight" || event.key === "ArrowDown"
-                    ? (index + 1) % 3
-                    : (index + 2) % 3;
-                setType((Object.keys(typeLabels) as ItemType[])[next]);
-              }}
-              onClick={() => setType(candidate)}
-              style={{
-                border:
-                  type === candidate
-                    ? `2px solid ${colors.accPrimary}`
-                    : `1px solid ${colors.bgHighlight}`,
-                backgroundColor: colors.bgSurface,
-                outline: "none",
-              }}
-            >
-              <Stack align="center" gap="xs">
-                <Box
-                  w="100%"
-                  h={70}
-                  p="xs"
-                  bg={colors.bgHighlight}
-                  style={{ borderRadius: 8 }}
-                >
-                  {candidate === "type_1" ? (
-                    <Stack gap={5} align="center" justify="center" h="100%">
-                      <Box w="45%" h={6} bg={colors.accPrimary} />
-                      <Box w="80%" h={4} bg={colors.textDimmed} />
-                      <Box w="70%" h={4} bg={colors.textDimmed} />
-                    </Stack>
-                  ) : candidate === "type_2" ? (
-                    <Stack gap={5} align="center" justify="center" h="100%">
-                      <Box w="80%" h={36} bg={colors.accPrimary} />
-                      <Box w="55%" h={5} bg={colors.textDimmed} />
-                    </Stack>
-                  ) : (
-                    <Group gap="xs" h="100%">
-                      <Box w="38%" h="80%" bg={colors.accPrimary} />
-                      <Stack gap={5} flex={1}>
-                        <Box w="80%" h={6} bg={colors.textDimmed} />
-                        <Box w="100%" h={4} bg={colors.textDimmed} />
-                        <Box w="90%" h={4} bg={colors.textDimmed} />
-                      </Stack>
-                    </Group>
-                  )}
-                </Box>
-                <Text fw={700} size="sm" c={colors.accPrimary}>
-                  {candidate === "type_1"
-                    ? "Text"
-                    : candidate === "type_2"
-                      ? "Image"
-                      : "Image + Text"}
-                </Text>
-                <Text size="xs" c={colors.textDimmed} ta="center">
-                  {candidate === "type_1"
-                    ? "Title and description, no image"
-                    : candidate === "type_2"
-                      ? "Image with title below"
-                      : "Image left, title and description right"}
-                </Text>
-                {type === candidate && (
-                  <IconCheck
-                    size={18}
-                    color={colors.accPrimary}
-                    aria-hidden="true"
-                  />
-                )}
-              </Stack>
-            </Card>
-          ))}
-        </SimpleGrid>
-        <Button fullWidth disabled={!type} onClick={() => setStep(1)}>
-          CONTINUE
-        </Button>
-      </Stack>
+      <ItemTypeStep
+        type={type}
+        onTypeChange={setType}
+        onContinue={() => setStep(1)}
+      />
     );
   }
 
   const submit = () => {
     const trimmedTitle = title.trim();
-    const missing =
-      type === "type_3"
-        ? !trimmedTitle || !hasImage || isDescriptionEmpty(description)
-        : type === "type_2"
-          ? !hasImage || !trimmedTitle
-          : !trimmedTitle || isDescriptionEmpty(description);
-    if (missing) {
-      setError(
-        type === "type_3"
-          ? "Title, image and description are required."
-          : type === "type_2"
-            ? "Image and title are required."
-            : "Title and description are required.",
-      );
+    const validationError = getItemValidationError(
+      type,
+      trimmedTitle,
+      description,
+      hasImage,
+    );
+    if (validationError) {
+      setError(validationError);
       return;
     }
     if (image instanceof File && image.size > 5 * 1024 * 1024) {
@@ -205,7 +124,7 @@ export default function ItemFormModal({ sectionId, item }: Props) {
 
   return (
     <Stack>
-      <Text fw={700} c={colors.text}>
+      <Text fw={700} c={colors.text} tt="uppercase">
         {typeLabels[type]}
       </Text>
       <TextInput
@@ -253,7 +172,7 @@ export default function ItemFormModal({ sectionId, item }: Props) {
           {error}
         </Text>
       )}
-      <Group justify="space-between">
+      <Group justify="center" align="center">
         {!item && (
           <Button variant="subtle" onClick={() => setStep(0)}>
             Back

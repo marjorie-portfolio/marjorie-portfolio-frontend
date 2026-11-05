@@ -71,7 +71,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
           active={isActive("/")}
           styles={linkStyles(isActive("/"))}
           label={
-            <Text size="lg" fw={600} c={colors.accPrimary}>
+            <Text size="lg" fw={600} c={colors.accPrimary} tt={"uppercase"}>
               Home
             </Text>
           }
@@ -83,7 +83,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
           active={isActive("/dashboard")}
           styles={linkStyles(isActive("/dashboard"))}
           label={
-            <Text size="lg" fw={600} c={colors.accPrimary}>
+            <Text size="lg" fw={600} c={colors.accPrimary} tt={"uppercase"}>
               Dashboard
             </Text>
           }
@@ -119,7 +119,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
                 active={isActive(path)}
                 styles={linkStyles(isActive(path))}
                 label={
-                  <Text size="md" fw={600} c={colors.accPrimary}>
+                  <Text size="md" fw={600} c={colors.accPrimary} tt={"uppercase"}>
                     {section.title}
                   </Text>
                 }
@@ -141,6 +141,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
             fw={600}
             fz={15}
             onClick={() => openContactModal(colors.accPrimary)}
+            mt={10}
           >
             CONTACT MARJORIE!
           </Button>
@@ -151,7 +152,7 @@ export default function SideBar({ onNavigate }: SideBarProps) {
             size="xs"
             fz={15}
             w={"50%"}
-            mt="20"
+            mt="10"
             mb="md"
             loading={logOut.isPending}
             onClick={handleLogout}

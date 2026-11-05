@@ -9,26 +9,24 @@ import {
   UnstyledButton,
   ActionIcon,
   Tooltip,
-  TextInput,
-  Button,
 } from "@mantine/core";
 import {
-  IconPlus,
   IconPencilFilled,
   IconTrashFilled,
 } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useMediaQuery } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useMediaQuery } from "@mantine/hooks";
+import { useMemo } from "react";
 
 import { useTheme } from "../../context/ThemeContext";
 
 import PageHeader from "../../components/common/PageHeader";
 import Panel from "./components/Panel";
+import EditSectionModal from "./components/EditSectionModal";
+import DeleteSectionModal from "./components/DeleteSectionModal";
 import CreateSectionModals from "../../components/modals/create-section";
 
 import useAuthState from "../../store/useAuthStore";
@@ -38,15 +36,13 @@ import { acitvityLogsQueries } from "../../query/acitvity-logs.query";
 import { sectionQueries } from "../../query/sections.query";
 
 import { formatTime } from "../../helpers/formatTime";
+import { getModalStyles } from "../../helpers/modalStyles";
 
 import type {
   ActivityAction,
   ActivityLogGroup,
 } from "../../types/activity-logs.types";
 import type { Section } from "../../types/section.types";
-import { sectionMutations } from "../../mutations/sections.mutation";
-import { deleteSection } from "../../api/sections.api";
-import { sectionsKey } from "../../query/sections.query";
 import ExpiryTimer from "../../components/ExpiryTimer";
 import {
   getExpiresAt,
@@ -60,80 +56,13 @@ const ACTION_META: Record<ActivityAction, { label: string; color: string }> = {
   UPDATED: { label: "Updated / Edited", color: "#d9a066" },
 };
 
-function EditSectionForm({ section }: { section: Section }) {
-  const [name, setName] = useState(section.title);
-  const [error, setError] = useState<string | null>(null);
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    ...sectionMutations.edit(section.id),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: sectionsKey.all });
-      await queryClient.invalidateQueries({
-        queryKey: sectionsKey.byId(section.id),
-      });
-      notifications.show({
-        title: "Section renamed",
-        message: "The section name was updated.",
-        color: "primary",
-      });
-      modals.closeAll();
-    },
-    onError: (cause) => {
-      const message =
-        cause instanceof Error && cause.message.includes("already exists")
-          ? "A section with this name already exists."
-          : "Unable to rename this section.";
-      setError(message);
-      notifications.show({
-        title: "Unable to rename section",
-        message,
-        color: "primary",
-      });
-    },
-  });
-  return (
-    <Stack gap="xl" mt="md">
-      <TextInput
-        label="SECTION NAME"
-        value={name}
-        onChange={(event) => {
-          setName(event.currentTarget.value);
-          setError(null);
-        }}
-        error={error}
-      />
-      <Button
-        fullWidth
-        loading={mutation.isPending}
-        disabled={name.trim() === section.title}
-        onClick={() => {
-          const value = name.trim();
-          if (!value) return setError("Section name is required.");
-          if (value.length > 50)
-            return setError("Section name must be 50 characters or fewer.");
-          mutation.mutate(value);
-        }}
-      >
-        SAVE
-      </Button>
-    </Stack>
-  );
-}
-
 export default function DashBoard() {
   const { colors } = useTheme();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const modalStyles = {
-    content: { backgroundColor: colors.bgSurface },
-    header: {
-      backgroundColor: colors.bgSurface,
-      borderBottom: `1px solid ${colors.bgHighlight}`,
-    },
-    body: { backgroundColor: colors.bgSurface },
-    title: { color: colors.text },
-    close: { color: colors.text },
-  };
+  const modalStyles = useMemo(
+    () => getModalStyles(colors, { compactHeader: true }),
+    [colors],
+  );
   const mobile = useMediaQuery("(max-width: 768px)");
 
   const { data: groupedLogs = [], isLoading } = useQuery(
@@ -155,23 +84,6 @@ export default function DashBoard() {
     : Number(user?.dashBoard.visitors);
 
   const { nameModal } = CreateSectionModals();
-  const deleteMutation = useMutation({
-    mutationFn: (sectionId: number) => deleteSection(sectionId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: sectionsKey.all });
-      notifications.show({
-        title: "Section deleted",
-        message: "The section and its content were deleted.",
-        color: "primary",
-      });
-    },
-    onError: () =>
-      notifications.show({
-        title: "Unable to delete section",
-        message: "Please try again.",
-        color: "primary",
-      }),
-  });
   const canChange = (section: Section) => {
     if (user?.role === "owner") return true;
     if (
@@ -189,19 +101,11 @@ export default function DashBoard() {
   };
   const openDelete = (section: Section) => {
     if (!canChange(section)) return;
-    modals.openConfirmModal({
+    modals.open({
       title: "Delete section",
-      children: (
-        <Text>
-          Delete "{section.title}"? All of its items and cards will also be
-          deleted. This cannot be undone.
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "primary", leftSection: <IconTrashFilled size={16} /> },
+      children: <DeleteSectionModal section={section} />,
       centered: true,
       styles: modalStyles,
-      onConfirm: () => deleteMutation.mutate(section.id),
     });
   };
   const openEdit = (section: Section) => {
@@ -212,7 +116,7 @@ export default function DashBoard() {
           EDIT SECTION
         </Text>
       ),
-      children: <EditSectionForm section={section} />,
+      children: <EditSectionModal section={section} />,
       centered: true,
       styles: modalStyles,
     });
@@ -266,7 +170,7 @@ export default function DashBoard() {
                       <Box key={group.date} px="md" py={6}>
                         <Text
                           c={colors.text}
-                          fz={12}
+                          fz={15}
                           fw={700}
                           pb={2}
                           style={{
@@ -300,14 +204,13 @@ export default function DashBoard() {
                                 <Box style={{ minWidth: 0, flex: 1 }}>
                                   <Text
                                     c={colors.text}
-                                    fz={11}
+                                    fz={13}
                                     fw={600}
                                     lineClamp={2}
                                   >
                                     {log.label}
                                   </Text>
                                   <Text c={colors.textDimmed} fz={10}>
-                                    {log.entity} {log.entityId} ·{" "}
                                     {formatTime(new Date(log.createdAt))}
                                   </Text>
                                 </Box>
@@ -362,6 +265,7 @@ export default function DashBoard() {
                             fw={600}
                             truncate
                             style={{ minWidth: 0 }}
+                            tt="uppercase"
                           >
                             {section.title}
                           </Text>
@@ -403,7 +307,7 @@ export default function DashBoard() {
 
               <Flex gap="lg" h={mobile ? 110 : 120}>
                 <UnstyledButton
-                  onClick={nameModal}
+                  onClick={openAdd}
                   style={{ ...cardStyle, flex: 2, borderRadius: 16 }}
                 >
                   <Stack justify="center" align="center" gap={0} h="100%">

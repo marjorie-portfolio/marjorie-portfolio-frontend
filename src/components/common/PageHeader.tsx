@@ -1,6 +1,6 @@
 import { Text, ActionIcon, Box, Group } from "@mantine/core";
 import type { ReactNode } from "react";
-import { IconArrowBigLeftFilled } from "@tabler/icons-react";
+import { IconChevronLeft  } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
 
@@ -25,7 +25,7 @@ export default function PageHeader({
     const mobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <Box  h={mobile? 35 : 70} pos="relative" bg={colors.bgBase} my={20}>
+    <Box  h={mobile? 35 : 100} pos="relative" bg={colors.bgBase} my={20}>
       {(
         !hideBackButton &&
         <ActionIcon
@@ -38,13 +38,13 @@ export default function PageHeader({
           size="xl"
           onClick={() => navigate(-1)}
         >
-          <IconArrowBigLeftFilled color={colors.accPrimary} size={mobile? 20: 35} />
+          <IconChevronLeft  color={colors.accPrimary} size={mobile? 20: 35} />
         </ActionIcon>
       )}
 
       <Group justify="center" h="100%" px="md">
-        <Text ta="center" ff="Climate Crisis" c={colors.accPrimary} fz={mobile? 20 :45}>
-          <span style={{ textTransform: uppercase ? "uppercase" : "none" }}>{title}</span>
+        <Text ta="center" ff="Bowlby One SC" c={colors.accPrimary} fz={mobile? 20 :45} tt="uppercase">
+       {title}
         </Text>
         {action}
       </Group>

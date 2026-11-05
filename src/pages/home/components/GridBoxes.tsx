@@ -30,7 +30,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
           const isFlipped = !!flippedCards[index];
 
           return (
-            <Grid.Col key={item.id ?? index} span={{ base: 12, sm: 3 }}>
+            <Grid.Col key={item.id ?? index} span={{ base: 12, sm: 4 }}>
               <Box
                 onClick={() => toggleFlip(index)}
                 className="cardPerspective"
@@ -43,7 +43,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
                     className="cardFace"
                     bg={colors.accPrimary}
                   >
-                    <Text fw={600} size="xl" c={colors.text}>
+                    <Text fw={600} size="xl" c={colors.bgHighlight}>
                       CLICK HERE!!!
                     </Text>
                   </Paper>
@@ -52,7 +52,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
                   <Paper
                     radius="lg"
                     className="cardFace backFace"
-                    bg={colors.text}
+                    bg={colors.bgDialog}
                   >
                     <Box className="backContent">
                       <Text size="sm" c={colors.accPrimary} fw={600} className="descriptionText">
