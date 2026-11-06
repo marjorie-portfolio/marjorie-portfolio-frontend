@@ -25,7 +25,7 @@ export default function PageHeader({
     const mobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <Box  h={mobile? 35 : 100} pos="relative" bg={colors.bgBase} my={20}>
+    <Box  h={mobile? 35 : 100} pos="relative" bg={colors.bgBase} mt={20}>
       {(
         !hideBackButton &&
         <ActionIcon
@@ -43,7 +43,7 @@ export default function PageHeader({
       )}
 
       <Group justify="center" h="100%" px="md">
-        <Text ta="center" ff="Bowlby One SC" c={colors.accPrimary} fz={mobile? 20 :45} tt="uppercase">
+        <Text ta="center" ff="Bowlby One SC" c={colors.accPrimary} fz={mobile? 20 :45} tt="uppercase" fw={700}>
        {title}
         </Text>
         {action}

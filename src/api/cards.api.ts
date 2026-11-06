@@ -23,10 +23,10 @@ export async function registerCards({sectionId}: Parameters, reqBody: RegisterCa
 
 export async function updateCard({cardId}: Parameters, reqBody: UpdateCardRequest){
     const response = await api.patch(`/cards/update-card/${cardId}`, reqBody)
-    return response
+    return response.data
 }
 
 export async function deleteCard(reqBody: DeleteCardsRequest): Promise<unknown>{
     const response = await api.delete(`/cards/delete-cards/`, {data: reqBody})
-    return response
+    return response.data
 }

@@ -30,3 +30,10 @@ export async function deleteSection(sectionId: number) {
   const response = await api.delete(`/section/delete-section/${sectionId}`);
   return response.data;
 }
+
+export async function reorderSections(sectionIds: number[]) {
+  const response = await api.patch("/section/edit-section-order", {
+    sectionIds,
+  });
+  return response.data;
+}

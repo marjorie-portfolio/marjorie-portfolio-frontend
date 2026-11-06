@@ -32,6 +32,17 @@ export async function updateItem(
   return response.data;
 }
 
+export async function reorderItems(
+  sectionId: number,
+  itemIds: number[],
+): Promise<unknown> {
+  const response = await api.patch(
+    `/item/${sectionId}/items/reorder`,
+    {itemIds},
+  );
+  return response.data;
+}
+
 export async function deleteItem(
   sectionId: number,
   itemId: number,

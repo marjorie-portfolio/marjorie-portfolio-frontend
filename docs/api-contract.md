@@ -43,14 +43,15 @@ Defined in `src/server.js` and `src/app.js`.
 | GET | `/item/` | none | none | List items (optional `?sectionId=`) |
 | POST | `/item/:sectionId/items` | **yes** | multipart | Create item (`itemType` required) |
 | PATCH | `/item/:sectionId/items/:itemId` | **yes** | multipart | Update item (`itemType` required) |
-| DELETE | `/item/:sectionId/items/:itemId` | **yes** | none | Delete item |
+| PATCH | `/item/:sectionId/items/reorder` | **yes** | Update ites displayOrder | 
+| DELETE | `/item/:sectionId/items/:itemId` | **yes** | none | Delete item (`displayOrder` must be array)
 | GET | `/cards` or `/cards/:sectionId` | none | none | List cards |
 | POST | `/cards/register-cards/:sectionId` | yes | JSON | Create many cards |
 | PATCH | `/cards/update-card/:cardId` | yes | JSON | Update card |
 | DELETE | `/cards/delete-cards/` | yes | JSON | Delete cards by id |
 | POST | `/analytics/record-visits` | none | none | Record a visit |
 | GET | `/analytics/visits` | none | none | Visit count |
-| GET | `/activity-logs/` | yes | none | Recent activity (**broken**, see Known issues) |
+| GET | `/activity-logs/` | yes | none | Recent activity |
 
 ## Known backend issues (do not work around silently)
 

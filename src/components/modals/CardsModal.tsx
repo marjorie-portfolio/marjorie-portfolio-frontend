@@ -51,6 +51,10 @@ export default function CardsModal({ sectionId }: Props) {
   });
   const remove = useMutation({
     ...cardMutations.delete(),
+    onMutate: (variables) => {
+      notifications.show({ title: "Card deleting", message: "Please Wait....", color: "primary" });
+      console.log("Mutation started with:", variables);
+    },
     onSuccess: async () => {
       await refresh();
       notifications.show({ title: "Card deleted", message: "The card was deleted.", color: "primary" });

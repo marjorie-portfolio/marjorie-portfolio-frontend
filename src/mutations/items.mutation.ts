@@ -1,5 +1,10 @@
 import { mutationOptions } from "@tanstack/react-query";
-import { createItem, deleteItem, updateItem } from "../api/items.api";
+import {
+  createItem,
+  deleteItem,
+  reorderItems,
+  updateItem,
+} from "../api/items.api";
 import type { ItemFormValues } from "../types/item.types";
 
 export const itemMutations = {
@@ -15,5 +20,9 @@ export const itemMutations = {
   delete: (sectionId: number, itemId: number) =>
     mutationOptions({
       mutationFn: () => deleteItem(sectionId, itemId),
+    }),
+  reorder: (sectionId: number) =>
+    mutationOptions({
+      mutationFn: (itemIds: number[]) => reorderItems(sectionId, itemIds),
     }),
 };

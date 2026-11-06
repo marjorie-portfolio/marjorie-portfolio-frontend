@@ -1,8 +1,9 @@
 import { Box, Card, Group, Stack, Text, Typography } from "@mantine/core";
 import DOMPurify from "dompurify";
-import { IconPencilFilled, IconTrashFilled } from "@tabler/icons-react";
+import { IconPencilFilled, IconTrashFilled, IconGripVertical } from "@tabler/icons-react";
 import { ActionIcon } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import type { DragEventHandler } from "react";
 import type { ItemType, SectionItem } from "../../types/section.types";
 import ImageFrame from "./ImageFrame";
 import ExpiryTimer from "../ExpiryTimer";
@@ -13,6 +14,11 @@ type ItemRendererProps = {
   item: SectionItem;
   onEdit: () => void;
   onDelete: () => void;
+  onDragStart?: DragEventHandler<HTMLDivElement>;
+  onDragEnd?: DragEventHandler<HTMLDivElement>;
+  onDragOver?: DragEventHandler<HTMLDivElement>;
+  onDrop?: DragEventHandler<HTMLDivElement>;
+  isDragging?: boolean;
 };
 
 function getItemType(item: SectionItem): ItemType {
@@ -40,6 +46,11 @@ export default function ItemRenderer({
   item,
   onEdit,
   onDelete,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
+  isDragging = false,
 }: ItemRendererProps) {
   const type = getItemType(item);
   const mobile = useMediaQuery("(max-width: 600px)");
@@ -55,7 +66,7 @@ export default function ItemRenderer({
         aria-label="Edit item"
         onClick={onEdit}
       >
-        <IconPencilFilled size={15} color={colors.accPrimary}/>
+        <IconPencilFilled size={15} color={colors.accPrimary} />
       </ActionIcon>
       <ActionIcon
         size="sm"
@@ -63,14 +74,45 @@ export default function ItemRenderer({
         aria-label="Delete item"
         onClick={onDelete}
       >
-        <IconTrashFilled size={15} color={colors.accPrimary}/>
+        <IconTrashFilled size={15} color={colors.accPrimary} />
+      </ActionIcon>
+      <ActionIcon
+        size="sm"
+        variant="subtle"
+        aria-label="Reorder item"
+        data-drag-handle="true"
+        style={{ cursor: "grab", touchAction: "none" }}
+      >
+        <IconGripVertical size={15} color={colors.accPrimary} style={{ pointerEvents: "none" }} />
       </ActionIcon>
     </Group>
   );
 
+  const cardProps = {
+    draggable: true,
+    onDragStart: (event: React.DragEvent<HTMLDivElement>) => {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", String(item.id));
+      onDragStart?.(event);
+    },
+    onDragEnd,
+    onDragOver: (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault(); // REQUIRED to allow dropping
+      event.dataTransfer.dropEffect = "move";
+      onDragOver?.(event);
+    },
+    onDrop,
+    style: {
+      opacity: isDragging ? 0.4 : 1,
+      cursor: "grab",
+      transition: "opacity 0.2s ease",
+    },
+  };
+
   if (type === "type_2") {
     return (
       <Card
+        {...cardProps}
         pos="relative"
         withBorder
         bd={`2px solid ${colors.accPrimary}`}
@@ -78,7 +120,7 @@ export default function ItemRenderer({
       >
         <Stack align="center">
           <ImageFrame src={item.imageUrl} ratio={16 / 9} />
-          <Text fw={700} ta="center" fz={25}  c={colors.text}>
+          <Text fw={700} ta="center" fz={25} c={colors.text}>
             {item.title}
           </Text>
         </Stack>
@@ -91,7 +133,7 @@ export default function ItemRenderer({
   }
   if (type === "type_3") {
     return (
-      <Card withBorder bd={`2px solid ${colors.accPrimary}`} bg={colors.bgBase}>
+      <Card {...cardProps} withBorder bd={`2px solid ${colors.accPrimary}`} bg={colors.bgBase}>
         <Box
           display="flex"
           style={{
@@ -101,7 +143,7 @@ export default function ItemRenderer({
           }}
         >
           <Box style={{ flex: "0 0 34%" }}>
-            <ImageFrame src={item.imageUrl} ratio={3 / 4}/>
+            <ImageFrame src={item.imageUrl} ratio={3 / 4} />
           </Box>
           <Stack style={{ flex: 1, minWidth: 0 }}>
             <Text fw={700} style={{ overflowWrap: "anywhere" }} fz={25} c={colors.text}>
@@ -118,7 +160,7 @@ export default function ItemRenderer({
     );
   }
   return (
-    <Card withBorder bd={`2px solid ${colors.accPrimary}`} bg={colors.bgBase}>
+    <Card {...cardProps} withBorder bd={`2px solid ${colors.accPrimary}`} bg={colors.bgBase}>
       <Stack align="center">
         <Text fw={700} ta="center" fz={25} c={colors.text}>
           {item.title}
