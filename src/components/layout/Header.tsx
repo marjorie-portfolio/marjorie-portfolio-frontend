@@ -2,7 +2,6 @@ import { AppShell, ActionIcon, Flex, Image, Button, UnstyledButton } from "@mant
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useMediaQuery } from "@mantine/hooks";
-import useAuthState from "../../store/useAuthStore";
 import { openContactModal } from "../modals/ContactModal";
 
 import MK_light from "../../assets/icons/MK_dark.png";
