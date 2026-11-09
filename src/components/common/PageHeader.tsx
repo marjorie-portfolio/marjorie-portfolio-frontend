@@ -17,7 +17,6 @@ export default function PageHeader({
   title,
   hideBackButton = false,
   action,
-  uppercase = true,
 }: PageHeaderProps) {
   const { colors } = useTheme();
   const navigate = useNavigate();

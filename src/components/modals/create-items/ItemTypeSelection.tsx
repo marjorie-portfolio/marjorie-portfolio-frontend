@@ -1,13 +1,9 @@
 import { Text, Button, Group, Stack, Box, UnstyledButton } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { useState } from 'react';
-import { useTheme } from '../../../context/ThemeContext';
-
 
 export default function ItemTypeSelection() {
   const [selectedType, setSelectedType] = useState<string>('');
-
-  const {colors} = useTheme()
 
   return (
     <Stack gap="xl" >

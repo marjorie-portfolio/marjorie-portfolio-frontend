@@ -7,7 +7,6 @@ import SectionContent from "../../components/section/SectionContent";
 import SectionFloatingActions from "../../components/section/SectionFloatingActions";
 import useSectionActions from "../../hooks/useSectionActions";
 import useSectionItems from "../../hooks/useSectionItems";
-import { useVisits } from "../../socket/useVisits";
 import { sectionQueries } from "../../query/sections.query";
 
 export default function Section() {

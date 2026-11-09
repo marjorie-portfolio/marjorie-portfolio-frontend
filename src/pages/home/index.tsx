@@ -72,7 +72,7 @@ export default function Home() {
             isAuthenticated ? navigate("/dashboard") : navigate("/sign-in")
           }
           isAuthenticated={isAuthenticated}
-          role={user?.role}
+          role={user?.role ?? null}
         />
       </Flex>
     </Flex>

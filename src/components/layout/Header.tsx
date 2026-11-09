@@ -1,4 +1,4 @@
-import { AppShell, ActionIcon, Flex, Image, Text, Button, UnstyledButton } from "@mantine/core";
+import { AppShell, ActionIcon, Flex, Image, Button, UnstyledButton } from "@mantine/core";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useMediaQuery } from "@mantine/hooks";
@@ -18,7 +18,6 @@ export default function Header({ onClick }: HeaderProps) {
   const mobile = useMediaQuery("(max-width: 768px)");
 
   const { colors, mode, toggleTheme } = useTheme();
-  const { isAuthenticated } = useAuthState();
 
   return (
     <AppShell.Header
