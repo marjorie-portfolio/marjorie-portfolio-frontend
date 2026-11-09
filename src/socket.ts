@@ -1,7 +1,12 @@
 
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:8000", {
+const BACKEND_URL = 
+  import.meta.env.MODE === "production" 
+    ? "https://marjorie-aguarin.onrender.com"
+    : "http://localhost:5000";
+
+export const socket = io(BACKEND_URL, {
   withCredentials: true,
 });
 
