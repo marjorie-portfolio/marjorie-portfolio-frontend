@@ -18,6 +18,7 @@ export function getModalStyles(
 ) {
   return {
     content: {
+      backgroundColor: colors.bgSurface,
       ...(hideScrollbar && {
         scrollbarWidth: "none" as const,
         "-ms-overflow-style": "none",
@@ -26,14 +27,18 @@ export function getModalStyles(
     },
     header: {
       backgroundColor: colors.bgSurface,
-      borderBottom: `2px solid ${colors.bgHighlight}`,
-      ...(compactHeader && { marginBottom: 10 }),
+      borderBottom: `1px solid ${colors.bgHighlight}`,
+      ...(compactHeader && {}),
     },
     body: {
       backgroundColor: colors.bgSurface,
       ...(bodyPadding !== undefined && { padding: bodyPadding }),
     },
-    title: { color: colors.text, fontWeight: compactHeader ? 700 : 800, fontSize: "20px"},
+    title: {
+      color: colors.text,
+      fontWeight: compactHeader ? 700 : 800,
+      fontSize: "20px",
+    },
     close: { color: colors.text },
   };
 }

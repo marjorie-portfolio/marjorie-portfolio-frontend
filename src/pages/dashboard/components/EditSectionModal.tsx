@@ -3,6 +3,7 @@ import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTheme } from "../../../context/ThemeContext";
 
 import { acitvityLogsKey } from "../../../query/acitvity-logs.query";
 import { sectionsKey } from "../../../query/sections.query";
@@ -10,6 +11,7 @@ import { sectionMutations } from "../../../mutations/sections.mutation";
 import type { Section } from "../../../types/section.types";
 
 export default function EditSectionModal({ section }: { section: Section }) {
+  const { colors } = useTheme();
   const [name, setName] = useState(section.title);
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -18,8 +20,13 @@ export default function EditSectionModal({ section }: { section: Section }) {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: sectionsKey.all }),
-        queryClient.invalidateQueries({ queryKey: sectionsKey.byId(section.id) }),
-        queryClient.refetchQueries({ queryKey: acitvityLogsKey.all, type: "active" }),
+        queryClient.invalidateQueries({
+          queryKey: sectionsKey.byId(section.id),
+        }),
+        queryClient.refetchQueries({
+          queryKey: acitvityLogsKey.all,
+          type: "active",
+        }),
       ]);
       notifications.show({
         title: "Section renamed",
@@ -60,6 +67,11 @@ export default function EditSectionModal({ section }: { section: Section }) {
           setError(null);
         }}
         error={error}
+        styles={{
+          label: {
+            color: colors.text,
+          },
+        }}
       />
       <Button
         fullWidth

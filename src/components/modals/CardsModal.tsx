@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { IconPencil, IconPlus, IconTrash, IconCheck } from "@tabler/icons-react";
+import { IconPencilFilled, IconPlus, IconTrashFilled, IconCheck } from "@tabler/icons-react";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cardMutations } from "../../mutations/cards.mutation";
@@ -102,11 +102,11 @@ export default function CardsModal({ sectionId }: Props) {
             </ActionIcon>
           ) : (
             <ActionIcon aria-label="Edit card" variant="subtle" onClick={() => beginEdit(card)}>
-              <IconPencil size={17} />
+              <IconPencilFilled size={17} color={colors.accPrimary}/>
             </ActionIcon>
           )}
           <ActionIcon aria-label="Delete card" variant="subtle" onClick={() => confirmDelete(card)} disabled={remove.isPending}>
-            <IconTrash size={17} />
+            <IconTrashFilled size={17} color={colors.accPrimary}/>
           </ActionIcon>
         </Group>
       ))}

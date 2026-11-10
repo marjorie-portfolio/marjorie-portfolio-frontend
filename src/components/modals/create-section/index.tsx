@@ -7,8 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { sectionMutations } from "../../../mutations/sections.mutation";
 import { sectionsKey } from "../../../query/sections.query";
 import { rememberSectionExpiry } from "../../../utils/content";
+import { useTheme } from "../../../context/ThemeContext";
+import { getModalStyles } from "../../../helpers/modalStyles";
 
 function CreateSectionForm() {
+  const {colors} = useTheme()
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
@@ -43,7 +46,7 @@ function CreateSectionForm() {
         }}
         error={error}
         label={
-          <Text fw={800} size="xs" style={{ letterSpacing: "0.5px" }}>
+          <Text fw={800} size="xs" style={{ letterSpacing: "0.5px" }} c={colors.text}>
             SECTION NAME:
           </Text>
         }
@@ -82,21 +85,28 @@ function CreateSectionForm() {
 }
 
 export default function CreateSectionModals() {
+  const { colors } = useTheme();
   const nameModal = () => {
     modals.open({
       title: (
-        <Box style={{ textAlign: 'center', width: '100%' }}>
-          <Text fw={900} size="lg" style={{ letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+        <Box style={{ textAlign: "center", width: "100%" }}>
+          <Text
+            fw={900}
+            size="lg"
+            c={colors.text}
+            style={{ letterSpacing: "0.5px", textTransform: "uppercase" }}
+          >
             CREATE SECTION
           </Text>
-          <Text size="xs" c="dimmed">
+          <Text size="xs" c={colors.textDimmed}>
             Set name for the section
           </Text>
         </Box>
       ),
       centered: true,
-      radius: 'lg',
-      padding: 'md',
+      radius: "lg",
+      padding: "md",
+      styles: getModalStyles(colors),
       children: <CreateSectionForm />,
     });
   };

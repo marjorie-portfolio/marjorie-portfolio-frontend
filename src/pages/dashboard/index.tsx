@@ -146,7 +146,7 @@ export default function DashBoard() {
     if (!canChange(section)) return;
     modals.open({
       title: (
-        <Text fw={900} tt="uppercase">
+        <Text fw={900} tt="uppercase" c={colors.text}>
           EDIT SECTION
         </Text>
       ),
@@ -163,7 +163,7 @@ export default function DashBoard() {
     modals.openConfirmModal({
       title: "Guest content",
       children: (
-        <Text>
+        <Text c={colors.text}>
           Anything you add as a guest is public and will be deleted
           automatically after 5 minutes.
         </Text>

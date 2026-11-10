@@ -29,9 +29,12 @@ function getItemType(item: SectionItem): ItemType {
 }
 
 function Description({ value }: { value: string | null }) {
+
+  const { colors } = useTheme()
   if (!value) return null;
   return (
     <Typography
+    c={colors.text}
       style={{
         overflowWrap: "anywhere",
         wordBreak: "break-word",

@@ -52,7 +52,7 @@ export default function SectionContent({
 
   if (items.length === 0) {
     return (
-      <Text ta="center" bg={backgroundColor}>
+      <Text ta="center" bg={backgroundColor} mt={100}>
         No items yet. Tap + to add one.
       </Text>
     );
