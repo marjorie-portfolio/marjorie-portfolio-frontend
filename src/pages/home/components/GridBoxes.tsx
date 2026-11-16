@@ -1,16 +1,10 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-
 import { Grid, Paper, Container, Text, Box } from "@mantine/core";
 import { useTheme } from "../../../context/ThemeContext";
 import "./styles/GridImage.Module.css";
+import type { Card } from "../../../types/cards.types";
 
-import { cardQueries } from "../../../query/cards.query";
-
-export default function GridBoxes({ sectionId }: { sectionId: any }) {
-  const { data: cards } = useQuery(cardQueries.list(sectionId));
-
-  const rawItems: any[] = Array.isArray(cards?.data) ? cards?.data : [];
+export default function GridBoxes({ cards }: { cards: Card[] }) {
 
   const { colors } = useTheme();
 
@@ -26,7 +20,7 @@ export default function GridBoxes({ sectionId }: { sectionId: any }) {
   return (
     <Container size="xl" py="xl" w="100%">
       <Grid gap="md">
-        {rawItems.map((item: any, index: number) => {
+        {cards.map((item, index) => {
           const isFlipped = !!flippedCards[index];
 
           return (

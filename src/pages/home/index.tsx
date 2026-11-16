@@ -1,4 +1,4 @@
-import { Flex, ActionIcon, Divider, Text } from "@mantine/core";
+import { Flex, ActionIcon, Divider, Text, Loader, Center } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { IconArrowBigDownLinesFilled } from "@tabler/icons-react";
@@ -20,9 +20,9 @@ export default function Home() {
   const { isAuthenticated, user} = useAuthState();
   const mobile = useMediaQuery("(max-width: 768px)");
 
-  const { data: sections } = useQuery(sectionQueries.all());
-
-  console.log(sections);
+  const { data: sections, isPending: isSectionsPending } = useQuery(
+    sectionQueries.all(),
+  );
 
   return (
     <Flex
@@ -41,30 +41,37 @@ export default function Home() {
 
       <Flex direction="column">
         <GridTitle/>
-        {sections?.data.map((item: any) =>
-          item.cards.length === 0 ? null : (
-            <div key={item.id}>
-              <Divider
-                label={
-                  <Text
-                    size="sm"
-                    fw={700}
-                    c={colors.text}
-                    style={{ letterSpacing: "1px" }}
-                    bg={colors.bgBase}
-                  >
-                    {item.title}
-                  </Text>
-                }
-                labelPosition="center"
-                size="sm"
-                color="pink.4"
-                mb={5}
-                mt={100}
-              />
-              <GridBoxes sectionId={item.id} />
-            </div>
-          ),
+        {isSectionsPending ? (
+          <Center py={100}>
+            <Loader color={colors.accPrimary} />
+          </Center>
+        ) : (
+          sections?.data.map((item) =>
+            item.cards.length === 0 ? null : (
+              <div key={item.id}>
+                <Divider
+                  label={
+                    <Text
+                      size="sm"
+                      fw={700}
+                      c={colors.text}
+                      style={{ letterSpacing: "1px" }}
+                      bg={colors.bgBase}
+                      tt={"uppercase"}
+                    >
+                      {item.title}
+                    </Text>
+                  }
+                  labelPosition="center"
+                  size="sm"
+                  color="pink.4"
+                  mb={5}
+                  mt={100}
+                />
+                <GridBoxes cards={item.cards} />
+              </div>
+            ),
+          )
         )}
 
         <EndTitle

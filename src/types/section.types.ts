@@ -1,3 +1,5 @@
+import type { Card } from "./cards.types";
+
 export interface CreateSectionReq {
     sectionName: string
 }
@@ -39,7 +41,7 @@ export interface CreateSectionReq {
    id: number;
    title: string;
    slug: string;
-   cards: unknown[];
+   cards: Card[];
    items: SectionItem[];
     expires_at: string | null;
     expiresAt?: string | null;
