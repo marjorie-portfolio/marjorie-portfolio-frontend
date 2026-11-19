@@ -35,10 +35,8 @@ import SectionsPanel from "./components/SectionsPanel";
 import { isTemporary, getRememberedSectionExpiry } from "../../utils/content";
 import { sectionMutations } from "../../mutations/sections.mutation";
 import { sectionsKey } from "../../query/sections.query";
-import { useVisits as useVisitsSocket } from "../../socket/useVisits";
 
 export default function DashBoard() {
-    useVisitsSocket()
   const { colors } = useTheme();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
