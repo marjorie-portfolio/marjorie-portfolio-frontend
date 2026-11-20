@@ -25,7 +25,7 @@ export default function Main() {
 
         backgroundImage: pattern,
 
-        backgroundSize: "60px 64px",
+        backgroundSize: "40px 44px",
 
         backgroundRepeat: "repeat",
       }}
