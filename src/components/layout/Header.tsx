@@ -3,6 +3,7 @@ import { IconSun, IconMoon } from "@tabler/icons-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useMediaQuery } from "@mantine/hooks";
 import { openContactModal } from "../modals/ContactModal";
+import styles from "./Header.module.css";
 
 import MK_light from "../../assets/icons/MK_dark.png";
 import MK_dark from "../../assets/icons/MK_light.png";
@@ -26,7 +27,7 @@ export default function Header({ onClick }: HeaderProps) {
       }}
     >
       <Flex h="100%" w={"100vw"} align="center" px="md" pr="30px" justify="space-between">
-        <UnstyledButton onClick={onClick}>
+        <UnstyledButton onClick={onClick} className={styles.shake}>
           <Image
             src={mode === "light" ? MK_light : MK_dark}
             h={mobile ? 25 : 20}
@@ -38,11 +39,10 @@ export default function Header({ onClick }: HeaderProps) {
         <Flex align="center" gap="md">
           { mobile ? ("") : (
             <Button
-              variant="transparent"
+              size="xs"
               ff="Poppins"
               fw={500}
-              fz={mobile ? 15 : 18}
-              c={colors.accPrimary} 
+              c={colors.bgSheet} 
               onClick={() => openContactModal(colors.accPrimary)}
             >
               CONTACT MARJORIE!

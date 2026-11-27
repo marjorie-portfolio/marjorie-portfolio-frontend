@@ -1,0 +1,28 @@
+.shake {
+  animation: shake 3s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%,
+  12%,
+  100% {
+    transform: translateX(0);
+  }
+
+  2%,
+  6%,
+  10% {
+    transform: translateX(-3px);
+  }
+
+  4%,
+  8% {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake {
+    animation: none;
+  }
+}

@@ -1,0 +1,46 @@
+.firstLine,
+.secondLine,
+.thirdLine {
+  animation: titleReveal 600ms ease-out both;
+}
+
+.secondLine {
+  animation-delay: 350ms;
+}
+
+.thirdLine {
+  animation-delay: 700ms;
+}
+
+.word {
+  white-space: nowrap;
+}
+
+.letter {
+  display: inline-block;
+  animation: titleReveal 350ms ease-out both;
+}
+
+@keyframes titleReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .firstLine,
+  .secondLine,
+  .thirdLine {
+    animation: none;
+  }
+
+  .letter {
+    animation: none;
+  }
+}

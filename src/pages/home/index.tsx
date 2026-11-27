@@ -2,6 +2,7 @@ import { Flex, ActionIcon, Divider, Text, Loader, Center } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { IconArrowBigDownLinesFilled } from "@tabler/icons-react";
+import styles from "./Home.module.css";
 
 import { useQuery } from "@tanstack/react-query";
 import { sectionQueries } from "../../query/sections.query";
@@ -34,7 +35,7 @@ export default function Home() {
       <HomeTitle />
 
       <Flex justify={"center"}>
-        <ActionIcon disabled size={"xl"} bg={colors.bgBase}>
+        <ActionIcon disabled size={"xl"} bg={colors.bgBase} className={styles.arrowBounce}>
           <IconArrowBigDownLinesFilled color={colors.accPrimary} size={30} />
         </ActionIcon>
       </Flex>
